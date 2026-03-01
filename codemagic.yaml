@@ -7,11 +7,10 @@ workflows:
     name: 企业记账报税 iOS
     max_build_duration: 120
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: codemagic  # 在 Codemagic 后台创建并命名
+    # ad_hoc 需在 Codemagic 后台手动上传 .p12 证书和 .mobileprovision
     environment:
       ios_signing:
-        distribution_type: app_store
+        distribution_type: ad_hoc  # 真机测试用；上架 App Store 时改为 app_store
         bundle_identifier: com.baoshui.app
       vars:
         XCODE_PROJECT: "App.xcodeproj"

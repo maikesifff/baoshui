@@ -68,10 +68,18 @@ git push
    - 下载 .p8 文件，记录 Issuer ID、Key ID
    - 在 Codemagic 中上传并命名为 `codemagic`（与 codemagic.yaml 中 `app_store_connect: codemagic` 一致）
 
-### 4. 配置 iOS 代码签名
+### 4. 配置 iOS 代码签名（当前为 ad_hoc 模式）
 
-- **自动签名**：在 Codemagic 应用设置 → Code signing 中配置 Apple 账号，Codemagic 会自动创建证书和描述文件
-- **手动签名**：上传已有的 .p12 证书和 .mobileprovision 描述文件
+当前使用 **Ad Hoc** 分发，需在 Codemagic 手动上传：
+
+1. **创建 Ad Hoc 描述文件**（developer.apple.com）：
+   - Identifiers → 确保有 `com.baoshui.app`
+   - Devices → 添加测试设备 UDID
+   - Profiles → 新建 Ad Hoc 描述文件，选择 App ID、证书、设备，下载 .mobileprovision
+
+2. **导出证书**：Mac 上从 Keychain 导出；无 Mac 时可用 Linux 的 openssl 生成 CSR，在 developer.apple.com 下载 .cer 后合成 .p12
+
+3. **上传到 Codemagic**：应用设置 → Code signing → iOS code signing → 上传 .p12 和 .mobileprovision
 
 ### 5. 触发构建
 
