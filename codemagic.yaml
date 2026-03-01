@@ -1,0 +1,57 @@
+# 企业记账报税 - Codemagic iOS 构建配置
+# 使用前请在 Codemagic 后台完成：
+# 1. 添加 App Store Connect 集成（API Key）
+# 2. 在 Code signing 中配置 iOS 签名（或使用自动签名）
+workflows:
+  baoshui-ios:
+    name: 企业记账报税 iOS
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: codemagic  # 在 Codemagic 后台创建并命名
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.baoshui.app
+      vars:
+        XCODE_PROJECT: "App.xcodeproj"
+        XCODE_SCHEME: "App"
+        # 若已创建 App Store Connect 应用，填入 App ID（App Store Connect > 应用 > 通用 > App 信息）
+        # APP_STORE_APP_ID: "1234567890"
+        node: v20
+        xcode: latest
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+        - pattern: master
+          include: true
+      source: true
+    scripts:
+      - name: 安装依赖
+        script: npm ci
+      - name: 构建 Web 资源
+        script: npm run build
+      - name: 同步 Capacitor iOS
+        script: npx cap sync ios
+      - name: 设置 Xcode 签名
+        script: |
+          cd ios/App
+          xcode-project use-profiles
+      - name: 递增构建号（可选）
+        script: |
+          cd $CM_BUILD_DIR/ios/App
+          agvtool new-version -all $BUILD_NUMBER
+      - name: 构建 IPA
+        script: |
+          cd $CM_BUILD_DIR/ios/App
+          xcode-project build-ipa \
+            --project "$XCODE_PROJECT" \
+            --scheme "$XCODE_SCHEME"
+    artifacts:
+      - ios/App/build/ios/ipa/*.ipa
+    publishing:
+      # 构建完成后可在 Codemagic 页面下载 IPA
+      # 如需自动上传 TestFlight，在 Codemagic 后台配置 App Store Connect 发布

@@ -43,10 +43,39 @@ GitHub 仓库 → Actions → 选择运行记录 → Artifacts 下载
 
 ## 方案二：Codemagic（免费层 500 分钟/月）
 
-1. 注册 https://codemagic.io
-2. 连接 GitHub 仓库
-3. 选择 iOS 模板，配置签名
-4. 构建后自动生成 IPA，可下载或上传 TestFlight
+项目已包含 `codemagic.yaml`，按以下步骤配置即可自动构建 IPA。
+
+### 1. 推送配置到 GitHub
+
+```bash
+cd /opt/baoshui
+git add codemagic.yaml
+git commit -m 'Add Codemagic workflow'
+git push
+```
+
+### 2. 在 Codemagic 添加应用
+
+1. 注册 https://codemagic.io，用 GitHub 登录
+2. 添加应用 → 选择 `alexwang-2021/baoshui` 仓库
+3. 选择分支（main 或 master），点击 **Check for configuration file**
+
+### 3. 配置 App Store Connect 集成
+
+1. Codemagic 后台 → **Team settings** → **Integrations** → **App Store Connect**
+2. 添加 API Key：
+   - 在 [App Store Connect](https://appstoreconnect.apple.com) → 用户 → 密钥 → 生成 API 密钥
+   - 下载 .p8 文件，记录 Issuer ID、Key ID
+   - 在 Codemagic 中上传并命名为 `codemagic`（与 codemagic.yaml 中 `app_store_connect: codemagic` 一致）
+
+### 4. 配置 iOS 代码签名
+
+- **自动签名**：在 Codemagic 应用设置 → Code signing 中配置 Apple 账号，Codemagic 会自动创建证书和描述文件
+- **手动签名**：上传已有的 .p12 证书和 .mobileprovision 描述文件
+
+### 5. 触发构建
+
+推送代码到 main/master 分支会自动触发，或手动点击 **Start new build**。构建完成后在 Codemagic 页面下载 IPA。
 
 ---
 
