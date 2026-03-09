@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>客服配置 - 后台管理</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #f3f4f6; min-height: 100vh; }
+    .admin-header { background: #1e3a5f; color: #fff; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .admin-nav-left { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 600; }
+    .admin-nav-left a { color: #fff; text-decoration: none; }
+    .admin-nav-left a:hover { text-decoration: underline; }
+    .admin-nav-sep { opacity: 0.7; font-weight: normal; }
+    .admin-nav-current { font-weight: 600; }
+    .admin-nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+    .admin-nav-links a { color: rgba(255,255,255,0.95); text-decoration: none; font-size: 14px; cursor: pointer; }
+    .admin-nav-links a:hover { text-decoration: underline; }
+    .admin-nav-links a.active { font-weight: 600; }
+    .admin-main { max-width: 600px; margin: 0 auto; padding: 24px; }
+    .admin-form { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .admin-form label { display: block; margin-bottom: 6px; color: #4b5563; font-weight: 500; }
+    .admin-form input, .admin-form textarea { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+    .admin-form textarea { min-height: 80px; resize: vertical; }
+    .admin-form .btn { padding: 10px 24px; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .msg { font-size: 13px; margin-top: 8px; }
+    .msg.ok { color: #059669; }
+    .msg.err { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <div class="admin-nav-left">
+      <a href="admin.html" class="admin-nav-brand">后台管理</a>
+      <span class="admin-nav-sep">/</span>
+      <span class="admin-nav-current">客服配置</span>
+    </div>
+    <nav class="admin-nav-links">
+      <a href="admin.html">用户管理</a>
+      <a href="admin-redemption.html">兑换码</a>
+      <a href="admin-coupons.html">优惠券</a>
+      <a href="admin-notifications.html">通知</a>
+      <a href="admin-discover.html">发现</a>
+      <a href="admin-contact.html" class="active">客服配置</a>
+      <a href="javascript:void(0)" id="adminLogoutLink">退出</a>
+    </nav>
+  </header>
+  <main class="admin-main" id="mainArea">
+    <div id="contentArea" style="display:none;">
+      <div class="admin-form">
+        <label>客服微信号</label>
+        <input type="text" id="contactWechat" placeholder="如 18301979482（与 hukou 项目一致）">
+        <label>说明文案</label>
+        <textarea id="contactDesc" placeholder="展示给用户的说明"></textarea>
+        <button type="button" class="btn" id="btnSave">保存</button>
+        <p id="saveMsg" class="msg"></p>
+      </div>
+    </div>
+  </main>
+  <script>
+(function() {
+  var token = localStorage.getItem('baoshui_admin_token');
+  var base = (function() { var p = window.location.pathname; if (/\/admin-contact\.html$/i.test(p)) return p.replace(/\/admin-contact\.html$/i, ''); return (p.replace(/\/[^/]+$/, '') || '/'); })();
+  if (!token) {
+    window.location.href = base + '/admin.html';
+    return;
+  }
+  document.getElementById('contentArea').style.display = 'block';
+  document.getElementById('adminLogoutLink').addEventListener('click', function() { localStorage.removeItem('baoshui_admin_token'); window.location.href = base + '/admin.html'; });
+  fetch(base + '/api/admin/config/contact', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res.code === 0 && res.data) {
+        document.getElementById('contactWechat').value = res.data.wechat || '';
+        document.getElementById('contactDesc').value = res.data.desc || '';
+      }
+    });
+  document.getElementById('btnSave').addEventListener('click', function() {
+    var wechat = (document.getElementById('contactWechat').value || '').trim();
+    var desc = (document.getElementById('contactDesc').value || '').trim();
+    var msgEl = document.getElementById('saveMsg');
+    fetch(base + '/api/admin/config/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ wechat: wechat, desc: desc })
+    }).then(function(r) { return r.json(); }).then(function(res) {
+      if (res.code === 0) { msgEl.textContent = '已保存'; msgEl.className = 'msg ok'; }
+      else { msgEl.textContent = res.message || '保存失败'; msgEl.className = 'msg err'; }
+    }).catch(function() { msgEl.textContent = '网络错误'; msgEl.className = 'msg err'; });
+  });
+})();
+  </script>
+</body>
+</html>

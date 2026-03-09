@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>发送通知 - 后台管理</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #f3f4f6; min-height: 100vh; }
+    .admin-header { background: #1e3a5f; color: #fff; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .admin-nav-left { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 600; }
+    .admin-nav-left a { color: #fff; text-decoration: none; }
+    .admin-nav-left a:hover { text-decoration: underline; }
+    .admin-nav-sep { opacity: 0.7; font-weight: normal; }
+    .admin-nav-current { font-weight: 600; }
+    .admin-nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+    .admin-nav-links a { color: rgba(255,255,255,0.95); text-decoration: none; font-size: 14px; cursor: pointer; }
+    .admin-nav-links a:hover { text-decoration: underline; }
+    .admin-nav-links a.active { font-weight: 600; }
+    .admin-main { max-width: 900px; margin: 0 auto; padding: 24px; }
+    .admin-form { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .admin-form label { display: block; margin-bottom: 6px; color: #4b5563; font-weight: 500; }
+    .admin-form input, .admin-form textarea { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; margin-bottom: 16px; }
+    .admin-form textarea { min-height: 100px; resize: vertical; }
+    .admin-form .btn { padding: 10px 24px; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .msg { font-size: 13px; margin-top: 8px; }
+    .msg.ok { color: #059669; }
+    .msg.err { color: #dc2626; }
+    .admin-table-wrap { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow-x: auto; margin-top: 24px; }
+    table.admin-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .admin-table th, .admin-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #e5e7eb; }
+    .admin-table th { background: #f9fafb; font-weight: 600; }
+    .admin-table .btn-sm { padding: 4px 10px; font-size: 12px; margin-right: 6px; cursor: pointer; border-radius: 6px; border: 1px solid #d1d5db; background: #fff; }
+    .admin-table .btn-sm:hover { background: #f3f4f6; }
+    .admin-table .btn-del { color: #dc2626; border-color: #fecaca; }
+    .filter-row { margin-bottom: 16px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .filter-row input { width: 160px; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; }
+    .filter-row .btn { padding: 8px 16px; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 12px; padding: 20px; width: 100%; max-width: 440px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+    .modal-box h3 { margin-bottom: 16px; font-size: 15px; }
+    .modal-box label { display: block; margin-bottom: 4px; font-size: 13px; color: #4b5563; }
+    .modal-box input, .modal-box textarea { width: 100%; padding: 8px 10px; border: 1px solid #d1d5db; border-radius: 6px; margin-bottom: 12px; font-size: 14px; }
+    .modal-box textarea { min-height: 80px; resize: vertical; }
+    .modal-box .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+    .modal-box .btn-secondary { padding: 8px 14px; background: #e5e7eb; color: #374151; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <div class="admin-nav-left">
+      <a href="admin.html" class="admin-nav-brand">后台管理</a>
+      <span class="admin-nav-sep">/</span>
+      <span class="admin-nav-current">通知</span>
+    </div>
+    <nav class="admin-nav-links">
+      <a href="admin.html">用户管理</a>
+      <a href="admin-redemption.html">兑换码</a>
+      <a href="admin-coupons.html">优惠券</a>
+      <a href="admin-notifications.html" class="active">通知</a>
+      <a href="admin-discover.html">发现</a>
+      <a href="admin-contact.html">客服配置</a>
+      <a href="javascript:void(0)" id="adminLogoutLink">退出</a>
+    </nav>
+  </header>
+  <main class="admin-main" id="mainArea">
+    <div id="contentArea" style="display:none;">
+      <div class="admin-form">
+        <label>标题</label>
+        <input type="text" id="notifTitle" placeholder="通知标题" required>
+        <label>内容</label>
+        <textarea id="notifContent" placeholder="通知内容"></textarea>
+        <label>指定手机号（留空则全员）</label>
+        <input type="text" id="notifPhone" placeholder="选填">
+        <button type="button" class="btn" id="btnSend">发送</button>
+        <p id="sendMsg" class="msg"></p>
+      </div>
+      <div class="admin-form">
+        <div class="filter-row">
+          <label style="margin:0;">按手机号筛选</label>
+          <input type="text" id="filterPhone" placeholder="留空查全部">
+          <button type="button" class="btn" id="btnLoadList">查询</button>
+        </div>
+        <div class="admin-table-wrap">
+          <table class="admin-table">
+            <thead><tr><th>ID</th><th>手机号</th><th>标题</th><th>内容</th><th>已读</th><th>创建时间</th><th>操作</th></tr></thead>
+            <tbody id="notifListBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div id="editNotifModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>编辑通知</h3>
+        <input type="hidden" id="editNotifId">
+        <label>标题</label>
+        <input type="text" id="editNotifTitle" placeholder="标题">
+        <label>内容</label>
+        <textarea id="editNotifContent" placeholder="内容"></textarea>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="editNotifCancel">取消</button>
+          <button type="button" class="btn" id="editNotifSave">保存</button>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script>
+(function() {
+  var token = localStorage.getItem('baoshui_admin_token');
+  var base = (function() { var p = window.location.pathname; if (/\/admin-notifications\.html$/i.test(p)) return p.replace(/\/admin-notifications\.html$/i, ''); return (p.replace(/\/[^/]+$/, '') || '/'); })();
+  if (!token) {
+    window.location.href = base + '/admin.html';
+    return;
+  }
+  document.getElementById('contentArea').style.display = 'block';
+  document.getElementById('adminLogoutLink').addEventListener('click', function() { localStorage.removeItem('baoshui_admin_token'); window.location.href = base + '/admin.html'; });
+
+  function escapeHtml(s) {
+    if (s == null) return '';
+    var div = document.createElement('div');
+    div.textContent = s;
+    return div.innerHTML;
+  }
+  function formatTime(s) {
+    if (!s) return '—';
+    var d = new Date(s.replace(' ', 'T') + (s.indexOf('Z') >= 0 || s.indexOf('+') >= 0 ? '' : 'Z'));
+    return isNaN(d.getTime()) ? s : d.toLocaleString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+  }
+  function loadList() {
+    var phone = (document.getElementById('filterPhone').value || '').trim();
+    var url = base + '/api/admin/notifications' + (phone ? '?phone=' + encodeURIComponent(phone) : '');
+    var tbody = document.getElementById('notifListBody');
+    tbody.innerHTML = '<tr><td colspan="7">加载中...</td></tr>';
+    fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.code !== 0 || !res.data || !res.data.length) {
+          tbody.innerHTML = '<tr><td colspan="7">暂无通知</td></tr>';
+          return;
+        }
+        window._notifList = res.data;
+        tbody.innerHTML = res.data.map(function(n) {
+          var contentShort = (n.content || '').length > 30 ? (n.content || '').substring(0, 30) + '…' : (n.content || '');
+          return '<tr><td>' + n.id + '</td><td>' + escapeHtml(n.phone) + '</td><td>' + escapeHtml(n.title) + '</td><td title="' + escapeHtml(n.content) + '">' + escapeHtml(contentShort) + '</td><td>' + (n.is_read ? '是' : '否') + '</td><td>' + formatTime(n.created_at) + '</td><td><button type="button" class="btn-sm btn-edit-notif" data-id="' + n.id + '">编辑</button><button type="button" class="btn-sm btn-del btn-del-notif" data-id="' + n.id + '">删除</button></td></tr>';
+        }).join('');
+        tbody.querySelectorAll('.btn-edit-notif').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            var id = btn.getAttribute('data-id');
+            var n = (window._notifList || []).find(function(x) { return String(x.id) === String(id); });
+            if (!n) return;
+            document.getElementById('editNotifId').value = n.id;
+            document.getElementById('editNotifTitle').value = n.title || '';
+            document.getElementById('editNotifContent').value = n.content || '';
+            document.getElementById('editNotifModal').classList.add('show');
+          });
+        });
+        tbody.querySelectorAll('.btn-del-notif').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            if (!confirm('确定删除该条通知？')) return;
+            var id = btn.getAttribute('data-id');
+            fetch(base + '/api/admin/notifications/' + id, { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } })
+              .then(function(r) { return r.json(); })
+              .then(function(res) { if (res.code === 0) loadList(); });
+          });
+        });
+      })
+      .catch(function() { tbody.innerHTML = '<tr><td colspan="7">加载失败</td></tr>'; });
+  }
+  document.getElementById('btnLoadList').addEventListener('click', loadList);
+  document.getElementById('editNotifCancel').addEventListener('click', function() { document.getElementById('editNotifModal').classList.remove('show'); });
+  document.getElementById('editNotifModal').addEventListener('click', function(e) { if (e.target.id === 'editNotifModal') e.target.classList.remove('show'); });
+  document.getElementById('editNotifSave').addEventListener('click', function() {
+    var id = document.getElementById('editNotifId').value;
+    var title = (document.getElementById('editNotifTitle').value || '').trim();
+    var content = (document.getElementById('editNotifContent').value || '').trim();
+    if (!title) { alert('请填写标题'); return; }
+    fetch(base + '/api/admin/notifications/' + id, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ title: title, content: content })
+    }).then(function(r) { return r.json(); }).then(function(res) {
+      if (res.code === 0) { document.getElementById('editNotifModal').classList.remove('show'); loadList(); }
+      else alert(res.message || '更新失败');
+    });
+  });
+
+  document.getElementById('btnSend').addEventListener('click', function() {
+    var title = (document.getElementById('notifTitle').value || '').trim();
+    var content = (document.getElementById('notifContent').value || '').trim();
+    var phone = (document.getElementById('notifPhone').value || '').trim();
+    var msgEl = document.getElementById('sendMsg');
+    if (!title) { msgEl.textContent = '请填写标题'; msgEl.className = 'msg err'; return; }
+    msgEl.textContent = '发送中...';
+    msgEl.className = 'msg';
+    fetch(base + '/api/admin/notifications', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ title: title, content: content, phone: phone || undefined })
+    }).then(function(r) { return r.json(); }).then(function(res) {
+      if (res.code === 0) {
+        msgEl.textContent = '已发送';
+        msgEl.className = 'msg ok';
+        document.getElementById('notifTitle').value = '';
+        document.getElementById('notifContent').value = '';
+        loadList();
+      } else {
+        msgEl.textContent = res.message || '发送失败';
+        msgEl.className = 'msg err';
+      }
+    }).catch(function() { msgEl.textContent = '网络错误'; msgEl.className = 'msg err'; });
+  });
+  loadList();
+})();
+  </script>
+</body>
+</html>

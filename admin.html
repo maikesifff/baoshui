@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理 - 自报税</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 14px;
+      color: #1f2937;
+      background: #f3f4f6;
+      min-height: 100vh;
+    }
+    .admin-login {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+    .admin-login-box {
+      background: #fff;
+      padding: 32px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 360px;
+    }
+    .admin-login-box h1 {
+      font-size: 20px;
+      margin-bottom: 24px;
+      color: #111827;
+    }
+    .admin-login-box label {
+      display: block;
+      margin-bottom: 6px;
+      color: #4b5563;
+      font-weight: 500;
+    }
+    .admin-login-box input[type="password"] {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+    .admin-login-box input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+    .admin-login-box .btn {
+      width: 100%;
+      padding: 12px;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .admin-login-box .btn:hover { background: #1d4ed8; }
+    .admin-login-box .error {
+      color: #dc2626;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .admin-app { display: none; min-height: 100vh; flex-direction: column; }
+    .admin-app.show { display: flex; }
+    .admin-header {
+      background: #1e3a5f;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .admin-nav-left { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 600; }
+    .admin-nav-left a { color: #fff; text-decoration: none; }
+    .admin-nav-left a:hover { text-decoration: underline; }
+    .admin-nav-sep { opacity: 0.7; font-weight: normal; }
+    .admin-nav-current { font-weight: 600; }
+    .admin-nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+    .admin-nav-links a { color: rgba(255,255,255,0.95); text-decoration: none; font-size: 14px; cursor: pointer; }
+    .admin-nav-links a:hover { text-decoration: underline; }
+    .admin-nav-links a.active { font-weight: 600; }
+    .admin-main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .admin-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: #111827;
+    }
+    .admin-table-wrap {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      overflow: hidden;
+    }
+    table.admin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .admin-table th,
+    .admin-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .admin-table th {
+      background: #f9fafb;
+      font-weight: 600;
+      color: #374151;
+      font-size: 13px;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-table tr:hover td { background: #f9fafb; }
+    .admin-table .clickable { cursor: pointer; }
+    .admin-table .btn-link {
+      background: none;
+      border: none;
+      color: #2563eb;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 0;
+      text-decoration: underline;
+    }
+    .admin-table .btn-link:hover { color: #1d4ed8; }
+    .admin-actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+    .admin-actions .btn-primary { padding: 8px 16px; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .admin-actions .btn-primary:hover { background: #1d4ed8; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 12px; padding: 24px; width: 100%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+    .modal-box h3 { margin-bottom: 20px; font-size: 16px; color: #111827; }
+    .modal-box label { display: block; margin-bottom: 6px; color: #4b5563; font-weight: 500; font-size: 13px; }
+    .modal-box input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+    .modal-box input:focus { outline: none; border-color: #2563eb; }
+    .modal-box .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+    .modal-box .btn-secondary { padding: 8px 16px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .modal-box .btn-secondary:hover { background: #d1d5db; }
+    .modal-box .modal-error { color: #dc2626; font-size: 13px; margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <div class="admin-login" id="loginScreen">
+    <div class="admin-login-box">
+      <h1>后台登录</h1>
+      <label for="adminPassword">密码</label>
+      <input type="password" id="adminPassword" placeholder="请输入密码" autocomplete="current-password">
+      <button type="button" class="btn" id="adminLoginBtn">登录</button>
+      <p class="error" id="loginError"></p>
+    </div>
+  </div>
+
+  <div class="admin-app" id="adminApp">
+    <header class="admin-header">
+      <div class="admin-nav-left">
+        <a href="admin.html" class="admin-nav-brand">后台管理</a>
+        <span class="admin-nav-sep">/</span>
+        <span class="admin-nav-current">用户管理</span>
+      </div>
+      <nav class="admin-nav-links">
+        <a href="admin.html" class="active">用户管理</a>
+        <a href="admin-redemption.html">兑换码</a>
+        <a href="admin-coupons.html">优惠券</a>
+        <a href="admin-notifications.html">通知</a>
+        <a href="admin-discover.html">发现</a>
+        <a href="admin-contact.html">客服配置</a>
+        <a href="javascript:void(0)" id="adminLogout">退出</a>
+      </nav>
+    </header>
+    <main class="admin-main">
+      <div class="admin-actions">
+        <h2 class="admin-section-title" style="margin-bottom:0;">用户列表</h2>
+        <button type="button" class="btn-primary" id="btnCreateUser">创建用户</button>
+      </div>
+      <div id="createUserModal" class="modal-overlay">
+        <div class="modal-box">
+          <h3>手动创建用户</h3>
+          <label for="createUserPhone">账号（手机号或自定义）</label>
+          <input type="text" id="createUserPhone" placeholder="如手机号或 test 等" autocomplete="off">
+          <label for="createUserPassword">登录密码</label>
+          <input type="password" id="createUserPassword" placeholder="选填，不填则为空密码" autocomplete="new-password">
+          <label for="createUserCompany">注册时企业名（选填）</label>
+          <input type="text" id="createUserCompany" placeholder="选填" autocomplete="off">
+          <p class="modal-error" id="createUserError"></p>
+          <div class="modal-actions">
+            <button type="button" class="btn-secondary" id="createUserCancel">取消</button>
+            <button type="button" class="btn-primary" id="createUserSubmit">确定</button>
+          </div>
+        </div>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>手机号</th>
+              <th>注册时企业名</th>
+              <th>企业数量</th>
+              <th>注册时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="userListBody">
+            <tr><td colspan="5">加载中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function() {
+      var base = (function() {
+        var p = window.location.pathname;
+        // 支持通过 admin.html 访问，如 /baoshui/admin.html -> base=/baoshui
+        if (/\/admin\.html$/i.test(p)) return p.replace(/\/admin\.html$/i, '');
+        return p.replace(/\/admin\/?$/, '') || '/';
+      })();
+
+      var token = localStorage.getItem('baoshui_admin_token');
+      var loginScreen = document.getElementById('loginScreen');
+      var adminApp = document.getElementById('adminApp');
+      var adminPassword = document.getElementById('adminPassword');
+      var adminLoginBtn = document.getElementById('adminLoginBtn');
+      var loginError = document.getElementById('loginError');
+      var userListBody = document.getElementById('userListBody');
+
+      function apiUrl(path) { return base + path; }
+      function authHeaders() { return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }; }
+
+      function showApp() {
+        loginScreen.style.display = 'none';
+        adminApp.classList.add('show');
+        loadUsers();
+      }
+      function showLogin() {
+        token = '';
+        localStorage.removeItem('baoshui_admin_token');
+        loginScreen.style.display = 'flex';
+        adminApp.classList.remove('show');
+      }
+
+      if (token) {
+        fetch(apiUrl('/api/admin/users'), { headers: authHeaders() })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code === 0) showApp();
+            else showLogin();
+          })
+          .catch(function() { showLogin(); });
+      }
+
+      adminLoginBtn.addEventListener('click', function() {
+        var pwd = (adminPassword.value || '').trim();
+        loginError.textContent = '';
+        if (!pwd) { loginError.textContent = '请输入密码'; return; }
+        adminLoginBtn.disabled = true;
+        fetch(apiUrl('/api/admin/login'), {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: pwd })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code === 0 && res.token) {
+              token = res.token;
+              localStorage.setItem('baoshui_admin_token', token);
+              showApp();
+            } else {
+              loginError.textContent = res.message || '登录失败';
+            }
+          })
+          .catch(function() { loginError.textContent = '网络错误'; })
+          .finally(function() { adminLoginBtn.disabled = false; });
+      });
+
+      document.getElementById('adminLogout').addEventListener('click', function() { showLogin(); });
+
+      var createUserModal = document.getElementById('createUserModal');
+      var createUserError = document.getElementById('createUserError');
+      document.getElementById('btnCreateUser').addEventListener('click', function() {
+        createUserError.textContent = '';
+        document.getElementById('createUserPhone').value = '';
+        document.getElementById('createUserPassword').value = '';
+        document.getElementById('createUserCompany').value = '';
+        createUserModal.classList.add('show');
+      });
+      document.getElementById('createUserCancel').addEventListener('click', function() {
+        createUserModal.classList.remove('show');
+        createUserError.textContent = '';
+      });
+      createUserModal.addEventListener('click', function(e) {
+        if (e.target === createUserModal) {
+          createUserModal.classList.remove('show');
+          createUserError.textContent = '';
+        }
+      });
+      document.getElementById('createUserSubmit').addEventListener('click', function() {
+        var phone = (document.getElementById('createUserPhone').value || '').trim();
+        var pwd = (document.getElementById('createUserPassword').value || '').trim();
+        var company = (document.getElementById('createUserCompany').value || '').trim();
+        createUserError.textContent = '';
+        if (!phone) {
+          createUserError.textContent = '请输入账号';
+          return;
+        }
+        var btn = document.getElementById('createUserSubmit');
+        btn.disabled = true;
+        fetch(apiUrl('/api/admin/users'), {
+          method: 'POST',
+          headers: authHeaders(),
+          body: JSON.stringify({ phone: phone, password: pwd, company_name: company })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code === 0) {
+              createUserModal.classList.remove('show');
+              loadUsers();
+            } else {
+              createUserError.textContent = res.message || '创建失败';
+            }
+          })
+          .catch(function() { createUserError.textContent = '网络错误'; })
+          .finally(function() { btn.disabled = false; });
+      });
+
+      function loadUsers() {
+        userListBody.innerHTML = '<tr><td colspan="5">加载中...</td></tr>';
+        fetch(apiUrl('/api/admin/users'), { headers: authHeaders() })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code !== 0) {
+              userListBody.innerHTML = '<tr><td colspan="5">加载失败: ' + (res.message || '') + '</td></tr>';
+              return;
+            }
+            var list = res.data || [];
+            if (list.length === 0) {
+              userListBody.innerHTML = '<tr><td colspan="5">暂无用户</td></tr>';
+              return;
+            }
+            userListBody.innerHTML = list.map(function(u) {
+              return '<tr class="clickable" data-phone="' + escapeHtml(u.phone) + '">' +
+                '<td>' + escapeHtml(u.phone) + '</td>' +
+                '<td>' + escapeHtml(u.company_name || '—') + '</td>' +
+                '<td>' + (u.companies_count || 0) + '</td>' +
+                '<td>' + escapeHtml(formatUtcToLocal(u.created_at)) + '</td>' +
+                '<td><button type="button" class="btn-link btn-view-user" data-phone="' + escapeHtml(u.phone) + '">查看</button></td></tr>';
+            }).join('');
+            userListBody.querySelectorAll('.clickable, .btn-view-user').forEach(function(el) {
+              var phone = el.getAttribute('data-phone');
+              if (phone) {
+                el.addEventListener('click', function() { openUserDetail(phone); });
+              }
+            });
+          })
+          .catch(function() {
+            userListBody.innerHTML = '<tr><td colspan="5">网络错误</td></tr>';
+          });
+      }
+
+      function escapeHtml(s) {
+        if (s == null) return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+      function formatUtcToLocal(s) {
+        if (!s || typeof s !== 'string') return s || '—';
+        s = s.trim();
+        if (!s) return '—';
+        var iso = s.replace(' ', 'T');
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(iso) && iso.indexOf('Z') === -1 && iso.indexOf('+') === -1) iso += 'Z';
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return s;
+        return d.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      }
+
+      function openUserDetail(phone) {
+        window.open(apiUrl('/admin-user.html?phone=' + encodeURIComponent(phone)), '_blank');
+      }
+    })();
+  </script>
+</body>
+</html>

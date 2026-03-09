@@ -1,0 +1,213 @@
+/* 报表页样式 */
+.page-header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 52px;
+  padding: 0 var(--page-padding, 16px);
+  background: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 50;
+}
+
+.page-header .btn-back {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 28px;
+  text-decoration: none;
+  line-height: 1;
+}
+
+.page-header .page-title {
+  flex: 1;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--white);
+  margin: 0;
+}
+
+.page-header .header-menu {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--white);
+  cursor: pointer;
+  position: relative;
+}
+
+.page-header .header-menu svg {
+  width: 24px;
+  height: 24px;
+}
+
+.report-content {
+  padding: var(--page-padding, 16px);
+  padding-bottom: 24px;
+}
+
+.report-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+}
+
+.report-card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin: 0 0 12px 0;
+  padding-left: 12px;
+  border-left: 4px solid var(--primary);
+}
+
+.report-status {
+  font-size: 14px;
+  margin: 0 0 4px 0;
+}
+
+.report-status.error {
+  color: var(--red);
+}
+
+.report-date {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin: 0 0 12px 0;
+}
+
+.report-links {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.report-links a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+/* 盈亏三列 */
+.report-summary {
+  display: flex;
+  border-top: 1px solid var(--gray-200);
+  padding-top: 16px;
+}
+
+.summary-col {
+  flex: 1;
+  text-align: center;
+  padding: 0 8px;
+  border-right: 1px solid var(--gray-200);
+}
+
+.summary-col:last-child {
+  border-right: none;
+}
+
+.summary-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.summary-label {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* 账目概览网格 */
+.account-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border-top: 1px solid var(--gray-200);
+  padding-top: 16px;
+}
+
+.account-item {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 16px 12px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.account-item:nth-child(odd) {
+  border-right: 1px solid var(--gray-100);
+  padding-right: 12px;
+}
+
+.account-item:nth-child(even) {
+  padding-left: 12px;
+}
+
+.account-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 4px;
+}
+
+.account-label {
+  font-size: 13px;
+  color: var(--gray-500);
+}
+
+/* 报表入口网格 */
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding-top: 16px;
+}
+
+.report-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--gray-900);
+}
+
+.report-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.report-icon-red { background: #fef2f2; color: #dc2626; }
+.report-icon-green { background: #f0fdf4; color: #16a34a; }
+.report-icon-blue { background: #eff6ff; color: #2563eb; }
+.report-icon-orange { background: #fff7ed; color: #ea580c; }
+.report-icon-purple { background: #faf5ff; color: #9333ea; }
+
+.report-name {
+  font-size: 12px;
+  text-align: center;
+  color: var(--gray-700);
+}
+
+/* 科目余额表单独一行 */
+.report-grid .report-item:nth-child(5) {
+  grid-column: 1 / 2;
+}

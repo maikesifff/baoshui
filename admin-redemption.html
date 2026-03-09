@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>兑换码管理 - 后台管理</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; font-size: 14px; color: #1f2937; background: #f3f4f6; min-height: 100vh; }
+    .admin-header { background: #1e3a5f; color: #fff; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+    .admin-nav-left { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 600; }
+    .admin-nav-left a { color: #fff; text-decoration: none; }
+    .admin-nav-left a:hover { text-decoration: underline; }
+    .admin-nav-sep { opacity: 0.7; font-weight: normal; }
+    .admin-nav-current { font-weight: 600; }
+    .admin-nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+    .admin-nav-links a { color: rgba(255,255,255,0.95); text-decoration: none; font-size: 14px; cursor: pointer; }
+    .admin-nav-links a:hover { text-decoration: underline; }
+    .admin-nav-links a.active { font-weight: 600; }
+    .admin-main { max-width: 1200px; margin: 0 auto; padding: 24px; }
+    .admin-section-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: #111827; }
+    .admin-table-wrap { background: #fff; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); overflow-x: auto; margin-bottom: 24px; }
+    table.admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th, .admin-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #e5e7eb; font-size: 13px; }
+    .admin-table th { background: #f9fafb; font-weight: 600; color: #374151; }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .admin-form { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+    .admin-form label { display: block; margin-bottom: 6px; color: #4b5563; font-weight: 500; }
+    .admin-form input, .admin-form select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px; margin-bottom: 12px; }
+    .admin-form .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; }
+    .admin-form .field { min-width: 140px; }
+    .admin-form .btn { padding: 10px 20px; background: #2563eb; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .admin-form .btn:hover { background: #1d4ed8; }
+    .admin-form .btn-gen { background: #6b7280; margin-left: 8px; }
+    .admin-form .btn-gen:hover { background: #4b5563; }
+    .filter-bar { margin-bottom: 12px; }
+    .filter-bar button { padding: 6px 12px; margin-right: 8px; border: 1px solid #d1d5db; background: #fff; border-radius: 6px; cursor: pointer; font-size: 13px; }
+    .filter-bar button.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+    .btn-delete { padding: 4px 10px; font-size: 12px; background: #dc2626; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    .btn-delete:disabled { background: #9ca3af; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <div class="admin-nav-left">
+      <a href="admin.html" class="admin-nav-brand">后台管理</a>
+      <span class="admin-nav-sep">/</span>
+      <span class="admin-nav-current">兑换码</span>
+    </div>
+    <nav class="admin-nav-links">
+      <a href="admin.html">用户管理</a>
+      <a href="admin-redemption.html" class="active">兑换码</a>
+      <a href="admin-coupons.html">优惠券</a>
+      <a href="admin-notifications.html">通知</a>
+      <a href="admin-discover.html">发现</a>
+      <a href="admin-contact.html">客服配置</a>
+      <a href="javascript:void(0)" id="logoutLink">退出</a>
+    </nav>
+  </header>
+  <main class="admin-main" id="mainArea">
+    <div id="contentArea" style="display:none;">
+      <div class="admin-form">
+        <h2 class="admin-section-title">新增兑换码</h2>
+        <div class="row">
+          <div class="field">
+            <label>兑换码</label>
+            <input type="text" id="newCode" placeholder="留空则自动生成" maxlength="32">
+            <button type="button" class="btn btn-gen" id="btnGenCode">生成</button>
+          </div>
+          <div class="field">
+            <label>纳税类型</label>
+            <select id="newTaxType">
+              <option value="small">小规模纳税人</option>
+              <option value="general">一般纳税人</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>记账类型</label>
+            <select id="newBizType">
+              <option value="with">有业务</option>
+              <option value="without">无业务</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>开通时长</label>
+            <select id="newDuration">
+              <option value="1">1个月</option>
+              <option value="12">1年</option>
+              <option value="24">2年</option>
+              <option value="36">3年</option>
+            </select>
+          </div>
+          <div class="field">
+            <button type="button" class="btn" id="btnCreate">创建</button>
+          </div>
+        </div>
+        <p id="createMsg" style="font-size:13px;color:#dc2626;margin-top:8px;"></p>
+      </div>
+      <div class="filter-bar">
+        <button type="button" data-used="" class="active">全部</button>
+        <button type="button" data-used="0">未使用</button>
+        <button type="button" data-used="1">已使用</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>兑换码</th>
+              <th>套餐</th>
+              <th>时长</th>
+              <th>状态</th>
+              <th>使用时间</th>
+              <th>使用人</th>
+              <th>企业ID</th>
+              <th>创建时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="codeListBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+  <script>
+    (function() {
+      var base = (function() {
+        var p = window.location.pathname;
+        if (/\/admin-redemption\.html$/i.test(p)) return p.replace(/\/admin-redemption\.html$/i, '');
+        return (p.replace(/\/[^/]+$/, '') || '/');
+      })();
+      var token = localStorage.getItem('baoshui_admin_token');
+      var contentArea = document.getElementById('contentArea');
+      var codeListBody = document.getElementById('codeListBody');
+      var newCode = document.getElementById('newCode');
+      var newTaxType = document.getElementById('newTaxType');
+      var newBizType = document.getElementById('newBizType');
+      var newDuration = document.getElementById('newDuration');
+      var createMsg = document.getElementById('createMsg');
+      var filterUsed = '';
+
+      function apiUrl(path) { return base + path; }
+      function authHeaders() { return { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }; }
+
+      function escapeHtml(s) {
+        if (s == null) return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+
+      function formatUtcToLocal(s) {
+        if (!s || typeof s !== 'string') return s || '—';
+        s = s.trim();
+        if (!s) return '—';
+        var iso = s.replace(' ', 'T');
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(iso) && iso.indexOf('Z') === -1 && iso.indexOf('+') === -1) iso += 'Z';
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return s;
+        return d.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      }
+
+      function packageLabel(tax, biz) {
+        var t = tax === 'general' ? '一般纳税人' : '小规模';
+        var b = biz === 'with' ? '有业务' : '无业务';
+        return t + ' / ' + b;
+      }
+      function durationLabel(d) {
+        var n = parseInt(d, 10);
+        if (n === 1) return '1个月';
+        if (n === 12) return '1年';
+        if (n === 24) return '2年';
+        if (n === 36) return '3年';
+        return n + '月';
+      }
+
+      if (!token) {
+        window.location.href = base + '/admin.html';
+        return;
+      }
+      contentArea.style.display = 'block';
+      loadCodes();
+
+      document.getElementById('logoutLink').addEventListener('click', function() {
+        localStorage.removeItem('baoshui_admin_token');
+        window.location.href = base + '/admin.html';
+      });
+
+      document.getElementById('btnGenCode').addEventListener('click', function() {
+        var s = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        var code = '';
+        for (var i = 0; i < 8; i++) code += s.charAt(Math.floor(Math.random() * s.length));
+        newCode.value = code;
+      });
+
+      document.getElementById('btnCreate').addEventListener('click', function() {
+        var code = (newCode.value || '').trim().toUpperCase();
+        if (!code) {
+          document.getElementById('btnGenCode').click();
+          code = (newCode.value || '').trim().toUpperCase();
+        }
+        createMsg.textContent = '';
+        var payload = { code: code, tax_type: newTaxType.value, biz_type: newBizType.value, duration: parseInt(newDuration.value, 10) };
+        fetch(apiUrl('/api/admin/redemption-codes'), { method: 'POST', headers: authHeaders(), body: JSON.stringify(payload) })
+          .then(function(r) {
+            if (r.status === 401) { localStorage.removeItem('baoshui_admin_token'); window.location.href = base + '/admin.html'; return Promise.reject(); }
+            return r.json();
+          })
+          .then(function(res) {
+            if (!res) return;
+            if (res.code === 401) { localStorage.removeItem('baoshui_admin_token'); window.location.href = base + '/admin.html'; return; }
+            if (res.code === 0) {
+              createMsg.style.color = '#059669';
+              createMsg.textContent = '创建成功：' + (res.data && res.data.code ? res.data.code : code);
+              newCode.value = '';
+              loadCodes();
+            } else {
+              createMsg.style.color = '#dc2626';
+              createMsg.textContent = res.message || '创建失败';
+            }
+          })
+          .catch(function() { createMsg.style.color = '#dc2626'; createMsg.textContent = '网络错误'; });
+      });
+
+      document.querySelectorAll('.filter-bar button').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.filter-bar button').forEach(function(b) { b.classList.remove('active'); });
+          btn.classList.add('active');
+          filterUsed = btn.getAttribute('data-used') || '';
+          loadCodes();
+        });
+      });
+
+      function loadCodes() {
+        codeListBody.innerHTML = '<tr><td colspan="9">加载中...</td></tr>';
+        var url = apiUrl('/api/admin/redemption-codes');
+        if (filterUsed !== '') url += '?used=' + filterUsed;
+        fetch(url, { headers: authHeaders() })
+          .then(function(r) {
+            if (r.status === 401) {
+              localStorage.removeItem('baoshui_admin_token');
+              window.location.href = base + '/admin.html';
+              return Promise.reject(new Error('未授权'));
+            }
+            return r.json();
+          })
+          .then(function(res) {
+            if (!res) return;
+            if (res.code === 401) {
+              localStorage.removeItem('baoshui_admin_token');
+              window.location.href = base + '/admin.html';
+              return;
+            }
+            if (res.code !== 0) {
+              codeListBody.innerHTML = '<tr><td colspan="9">加载失败: ' + (res.message || '') + '</td></tr>';
+              return;
+            }
+            var list = res.data || [];
+            if (list.length === 0) {
+              codeListBody.innerHTML = '<tr><td colspan="9">暂无兑换码</td></tr>';
+              return;
+            }
+            codeListBody.innerHTML = list.map(function(r) {
+              var used = !!r.used_at;
+              var status = used ? '已使用' : '未使用';
+              var op = used ? '' : '<button type="button" class="btn-delete" data-code="' + escapeHtml(r.code) + '">删除</button>';
+              return '<tr><td class="mono">' + escapeHtml(r.code) + '</td><td>' + escapeHtml(packageLabel(r.tax_type, r.biz_type)) + '</td><td>' + escapeHtml(durationLabel(r.duration)) + '</td><td>' + status + '</td><td>' + escapeHtml(formatUtcToLocal(r.used_at)) + '</td><td>' + escapeHtml(r.used_by_phone || '—') + '</td><td>' + escapeHtml(r.used_by_company_id || '—') + '</td><td>' + escapeHtml(formatUtcToLocal(r.created_at)) + '</td><td>' + op + '</td></tr>';
+            }).join('');
+            codeListBody.querySelectorAll('.btn-delete').forEach(function(btn) {
+              btn.addEventListener('click', function() {
+                var c = btn.getAttribute('data-code');
+                if (!c || !confirm('确定删除兑换码 ' + c + '？')) return;
+                fetch(apiUrl('/api/admin/redemption-codes/delete'), { method: 'POST', headers: authHeaders(), body: JSON.stringify({ code: c }) })
+                  .then(function(r) {
+                    if (r.status === 401) { localStorage.removeItem('baoshui_admin_token'); window.location.href = base + '/admin.html'; return Promise.reject(); }
+                    return r.json();
+                  })
+                  .then(function(res) {
+                    if (res && res.code === 401) { localStorage.removeItem('baoshui_admin_token'); window.location.href = base + '/admin.html'; return; }
+                    if (res && res.code === 0) loadCodes();
+                    else if (res) alert(res.message || '删除失败');
+                  });
+              });
+            });
+          })
+          .catch(function() { codeListBody.innerHTML = '<tr><td colspan="9">网络错误</td></tr>'; });
+      }
+    })();
+  </script>
+</body>
+</html>

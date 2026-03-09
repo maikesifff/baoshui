@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>税局登录信息 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .tax-bureau-banner {
+      background: #fff7ed;
+      color: #9a3412;
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+    .tax-bureau-form {
+      padding: 16px;
+    }
+    .tax-bureau-field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 15px;
+    }
+    .tax-bureau-field:last-of-type { border-bottom: none; }
+    .tax-bureau-label {
+      color: var(--gray-900);
+      flex-shrink: 0;
+      min-width: 5em;
+    }
+    .tax-bureau-label .required { color: var(--red); margin-right: 2px; }
+    .tax-bureau-value {
+      color: var(--gray-600);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .tax-bureau-value .arrow { color: var(--gray-400); font-size: 14px; }
+    .tax-bureau-input {
+      border: none;
+      text-align: right;
+      font-size: 15px;
+      width: 160px;
+      color: var(--gray-900);
+    }
+    .tax-bureau-input::placeholder { color: var(--gray-400); }
+    .tax-bureau-select {
+      border: none;
+      background: transparent;
+      font-size: 15px;
+      color: var(--gray-900);
+      text-align: right;
+      min-width: 140px;
+      cursor: pointer;
+    }
+    .tax-bureau-select:invalid,
+    .tax-bureau-select option[value=""] { color: var(--gray-400); }
+    .tax-bureau-select.placeholder { color: var(--gray-400); }
+    .tax-bureau-pwd-desc {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+    .tax-bureau-field-pwd { flex-direction: column; align-items: stretch; }
+    .tax-bureau-field-pwd .tax-bureau-pwd-left { width: 100%; word-break: normal; overflow-wrap: break-word; }
+    .tax-bureau-field-pwd .tax-bureau-pwd-right { width: 100%; margin-top: 8px; text-align: right; }
+    .tax-bureau-input-block { width: 100%; text-align: left; margin-bottom: 8px; }
+    .tax-bureau-pwd-extra { display: flex; align-items: center; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .tax-bureau-tag {
+      display: inline-block;
+      padding: 4px 10px;
+      background: var(--gray-200);
+      color: var(--gray-600);
+      font-size: 12px;
+      border-radius: 4px;
+      margin-right: 8px;
+    }
+    .tax-bureau-help {
+      color: var(--primary);
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .tax-bureau-help::before { content: '? '; }
+    .tax-bureau-btns { padding: 24px 16px 16px; }
+    .tax-bureau-btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: #dbeafe;
+      color: var(--primary);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 12px;
+    }
+    .tax-bureau-btn-reset {
+      width: 100%;
+      padding: 12px;
+      background: var(--white);
+      color: var(--primary);
+      border: 1px solid #dbeafe;
+      border-radius: var(--radius);
+      font-size: 15px;
+      cursor: pointer;
+    }
+    .tax-bureau-auth {
+      margin: 24px 16px;
+      padding: 16px;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+    }
+    .tax-bureau-auth h3 {
+      font-size: 14px;
+      color: var(--gray-900);
+      margin: 0 0 8px;
+    }
+    .tax-bureau-auth p {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.5;
+      margin: 0;
+      word-break: normal;
+      overflow-wrap: break-word;
+    }
+    .tax-bureau-info-icon {
+      display: inline-flex;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      color: var(--white);
+      font-size: 11px;
+      font-weight: bold;
+      align-items: center;
+      justify-content: center;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">税局登录信息</h1>
+    </header>
+
+    <div class="tax-bureau-banner">
+      提供税局网站登录信息,为您公司申报企业税
+    </div>
+
+    <div class="tax-bureau-form">
+      <div class="tax-bureau-field">
+        <span class="tax-bureau-label"><span class="required">*</span>税局网站</span>
+        <select id="taxBureauWebsite" class="tax-bureau-select" required>
+          <option value="">请选择税局</option>
+          <option value="上海电子税务局">上海电子税务局</option>
+          <option value="北京电子税务局">北京电子税务局</option>
+          <option value="广东电子税务局">广东电子税务局</option>
+          <option value="浙江电子税务局">浙江电子税务局</option>
+          <option value="江苏电子税务局">江苏电子税务局</option>
+          <option value="深圳电子税务局">深圳电子税务局</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+      <div class="tax-bureau-field">
+        <span class="tax-bureau-label">登录方式</span>
+        <select id="taxBureauLoginMethod" class="tax-bureau-select">
+          <option value="">请选择登录方式</option>
+          <option value="企业登录-税号">企业登录-税号</option>
+          <option value="实名登录">实名登录</option>
+          <option value="电子营业执照">电子营业执照</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+      <div class="tax-bureau-field">
+        <span class="tax-bureau-label"><span class="required">*</span>法人身份证</span>
+        <input type="text" id="taxBureauLegalId" class="tax-bureau-input" placeholder="请输入法人身份证号" maxlength="18">
+      </div>
+      <div class="tax-bureau-field tax-bureau-field-pwd">
+        <div class="tax-bureau-pwd-left">
+          <span class="tax-bureau-label"><span class="required">*</span>法人密码</span>
+          <span class="tax-bureau-info-icon" title="税局密码8-16位数字/字母/符号至少两种">i</span>
+          <p class="tax-bureau-pwd-desc">税局密码8-16位数字/字母/符号至少两种</p>
+        </div>
+        <div class="tax-bureau-pwd-right">
+          <input type="password" id="taxBureauLegalPwd" class="tax-bureau-input tax-bureau-input-block" placeholder="请输入密码">
+          <div class="tax-bureau-pwd-extra">
+            <span class="tax-bureau-tag" id="taxBureauVerifiedTag">未验证</span>
+            <a href="#" class="tax-bureau-help">帮助说明</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tax-bureau-btns">
+      <button type="button" class="tax-bureau-btn-submit" id="taxBureauSubmit">提交</button>
+      <button type="button" class="tax-bureau-btn-reset">帮我重置密码</button>
+    </div>
+
+    <div class="tax-bureau-auth">
+      <h3>授权代理报税说明</h3>
+      <p>税局登录信息验证成功后,将自动授权自报税科技(珠海)有限公司上海分公司代理报税权限,用于自动报税</p>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    (function() {
+      var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: { COMPANY_SETTINGS: '/api/company/settings' } };
+      var token = localStorage.getItem('token');
+      var companyId = localStorage.getItem('currentCompanyId') || '';
+      function needAuth() {
+        if (!token || !companyId) {
+          alert('请先登录并选择企业');
+          window.location.href = 'index.html';
+          return false;
+        }
+        return true;
+      }
+      function loadSettings() {
+        if (!needAuth()) return;
+        var url = (API.BASE_URL || '') + API.ENDPOINTS.COMPANY_SETTINGS + '?company_id=' + encodeURIComponent(companyId);
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(res) {
+            if (!res || res.code !== 0 || !res.data) return;
+            var d = res.data;
+            if (d.tax_bureau_website) document.getElementById('taxBureauWebsite').value = d.tax_bureau_website;
+            if (d.tax_bureau_login_method) document.getElementById('taxBureauLoginMethod').value = d.tax_bureau_login_method;
+            updateSelectPlaceholder();
+            if (d.tax_bureau_legal_id) document.getElementById('taxBureauLegalId').value = d.tax_bureau_legal_id;
+            if (d.tax_bureau_legal_password && d.tax_bureau_legal_password !== '******') document.getElementById('taxBureauLegalPwd').value = d.tax_bureau_legal_password;
+            if (d.tax_bureau_verified) {
+              var tag = document.getElementById('taxBureauVerifiedTag');
+              if (tag) { tag.textContent = '已验证'; tag.classList.add('verified'); }
+            }
+          });
+      }
+      document.getElementById('taxBureauSubmit').addEventListener('click', function() {
+        if (!needAuth()) return;
+        var website = (document.getElementById('taxBureauWebsite').value || '').trim();
+        var legalId = (document.getElementById('taxBureauLegalId').value || '').trim();
+        var pwd = document.getElementById('taxBureauLegalPwd').value || '';
+        if (!website || !legalId || !pwd) { alert('请填写税局网站、法人身份证和法人密码'); return; }
+        var btn = this;
+        btn.disabled = true;
+        var url = (API.BASE_URL || '') + API.ENDPOINTS.COMPANY_SETTINGS;
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({
+            company_id: companyId,
+            tax_bureau_website: website,
+            tax_bureau_login_method: (document.getElementById('taxBureauLoginMethod').value || '').trim(),
+            tax_bureau_legal_id: legalId,
+            tax_bureau_legal_password: pwd,
+            tax_bureau_verified: false
+          })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code === 0) { alert('保存成功'); window.location.href = 'index.html'; }
+            else { alert(res.message || '保存失败'); }
+          })
+          .catch(function() { alert('保存失败'); })
+          .finally(function() { btn.disabled = false; });
+      });
+      function updateSelectPlaceholder() {
+        var s1 = document.getElementById('taxBureauWebsite');
+        var s2 = document.getElementById('taxBureauLoginMethod');
+        if (s1) { s1.classList.toggle('placeholder', !s1.value); }
+        if (s2) { s2.classList.toggle('placeholder', !s2.value); }
+      }
+      [document.getElementById('taxBureauWebsite'), document.getElementById('taxBureauLoginMethod')].forEach(function(el) {
+        if (el) el.addEventListener('change', updateSelectPlaceholder);
+      });
+      loadSettings();
+      updateSelectPlaceholder();
+    })();
+  </script>
+</body>
+</html>

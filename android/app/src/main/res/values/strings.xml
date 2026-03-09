@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">企业记账报税</string>
-    <string name="title_activity_main">企业记账报税</string>
-    <string name="package_name">com.baoshui.app</string>
-    <string name="custom_url_scheme">com.baoshui.app</string>
+    <string name="app_name">自报税</string>
+    <string name="title_activity_main">自报税</string>
+    <string name="package_name">zibaoshui.android.demo</string>
+    <string name="custom_url_scheme">zibaoshui.android.demo</string>
 </resources>

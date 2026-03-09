@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>单据明细 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .doc-page { padding: 16px; }
+    .doc-period { margin-bottom: 16px; }
+    .doc-period label { font-size: 14px; color: var(--gray-600); }
+    .doc-period select { width: 100%; max-width: 200px; padding: 8px 12px; margin-top: 4px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 15px; }
+    .doc-list-item { padding: 12px 16px; background: #fff; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .doc-list-item .amount { font-weight: 500; }
+    .doc-list-item .meta { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
+    .doc-list-item a.attach { font-size: 12px; color: var(--primary); margin-right: 8px; }
+    .doc-empty { text-align: center; padding: 48px 24px; color: var(--gray-500); }
+    .doc-login-tip { text-align: center; padding: 48px 24px; color: var(--gray-500); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">单据明细</h1>
+    </header>
+    <main class="doc-page">
+      <div class="doc-login-tip" id="docLoginTip" style="display:none">请先登录并选择企业</div>
+      <div id="docContent" style="display:none">
+        <div class="doc-period">
+          <label>月份</label>
+          <select id="docPeriod"></select>
+        </div>
+        <div id="docList"></div>
+      </div>
+    </main>
+  </div>
+  <script src="config.js"></script>
+  <script>
+(function() {
+  var token = localStorage.getItem('token');
+  var companyId = localStorage.getItem('currentCompanyId') || '';
+  var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: {} };
+  var baseUrl = (API.BASE_URL || '').replace(/\/$/, '');
+
+  if (!token || !companyId) {
+    document.getElementById('docLoginTip').style.display = 'block';
+    return;
+  }
+  document.getElementById('docContent').style.display = 'block';
+
+  function buildPeriodOptions() {
+    var now = new Date();
+    var y = now.getFullYear();
+    var m = now.getMonth();
+    var arr = [];
+    for (var i = 0; i < 6; i++) {
+      var mm = m - i;
+      var yy = y;
+      if (mm < 0) { mm += 12; yy--; }
+      var period = yy + '-' + String(mm + 1).padStart(2, '0');
+      arr.push({ value: period, text: yy + '年' + (mm + 1) + '月' });
+    }
+    var sel = document.getElementById('docPeriod');
+    sel.innerHTML = arr.map(function(p) { return '<option value="' + p.value + '">' + p.text + '</option>'; }).join('');
+    sel.addEventListener('change', loadList);
+    loadList();
+  }
+
+  function loadList() {
+    var period = document.getElementById('docPeriod').value;
+    var url = (API.BASE_URL || '') + (API.ENDPOINTS.DOCUMENTS || '/api/documents') + '?company_id=' + encodeURIComponent(companyId) + '&period=' + encodeURIComponent(period);
+    fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        var el = document.getElementById('docList');
+        if (res.code !== 0 || !res.data || !res.data.length) {
+          el.innerHTML = '<div class="doc-empty">完成记账后将在此展示单据明细</div>';
+          return;
+        }
+        el.innerHTML = res.data.map(function(d) {
+          var attachHtml = (d.attachments && d.attachments.length) ? d.attachments.map(function(a) {
+            var href = baseUrl + '/' + (a.file_path || '');
+            return '<a class="attach" href="' + href + '" target="_blank">凭证</a>';
+          }).join('') : '';
+          return '<div class="doc-list-item"><span class="amount">' + (d.type === 'income' ? '+' : '-') + Number(d.amount).toFixed(2) + '</span> ' + (d.category_name || '') + '<div class="meta">' + (d.remark || '') + ' ' + (d.created_at ? d.created_at.slice(0, 16) : '') + '</div>' + (attachHtml ? '<div class="meta">' + attachHtml + '</div>' : '') + '</div>';
+        }).join('');
+      });
+  }
+
+  buildPeriodOptions();
+})();
+  </script>
+</body>
+</html>

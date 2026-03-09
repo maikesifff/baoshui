@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>下载 - 企业记账报税</title>
+  <title>下载 - 自报税</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; padding: 24px; max-width: 480px; margin: 0 auto; }
@@ -18,24 +18,40 @@
   </style>
 </head>
 <body>
-  <h1>企业记账报税 - 下载</h1>
+  <h1>自报税 - 下载</h1>
   <div class="card">
     <h2>Android 安装包 (APK)</h2>
     <p>适用于安卓手机，直接安装使用</p>
-    <a href="/download/app-debug.apk" class="btn">下载 app-debug.apk</a>
+    <a href="download/app-debug.apk" class="btn">下载安卓 APK</a>
   </div>
   <div class="card">
     <h2>完整压缩包</h2>
     <p>包含 APK、构建说明、构建脚本</p>
-    <a href="/download/baoshui-apk.zip" class="btn">下载 baoshui-apk.zip</a>
+    <a href="download/baoshui-apk.zip" class="btn">下载 baoshui-apk.zip</a>
   </div>
   <div class="card">
-    <h2>iOS 版本</h2>
-    <p>可用云 Mac（GitHub Actions/Codemagic）或本机 Xcode 构建，详见「云Mac构建说明.md」</p>
-    <a href="/download/baoshui-ios-source.zip" class="btn">下载 iOS 源码包</a>
+    <h2>iPhone OTA 安装（需 HTTPS）</h2>
+    <p>上传 IPA 后，在 iPhone Safari 中点击安装链接即可安装，无需电脑</p>
+    <a href="ios-upload.html" class="btn">上传 IPA</a>
+    <a href="download/ios-install" class="btn" style="margin-left:8px;">前往安装页</a>
+  </div>
+  <div class="card">
+    <h2>iPhone 安装（推荐）</h2>
+    <p>在 Safari 中打开本站，点击分享按钮 →「添加到主屏幕」，即可像 App 一样使用</p>
+    <a href="index.html" class="btn">打开首页并添加</a>
+  </div>
+  <div class="card">
+    <h2>iOS 模拟器版</h2>
+    <p>GitHub 构建产物，仅 Mac 模拟器可用</p>
+    <a href="download/ios" class="btn">前往 GitHub 下载</a>
+  </div>
+  <div class="card">
+    <h2>iOS 源码包</h2>
+    <p>在 Mac 上用 Xcode 构建真机 IPA</p>
+    <a href="download/baoshui-ios-source.zip" class="btn">下载 baoshui-ios-source.zip</a>
   </div>
   <div class="back">
-    <a href="/">← 返回首页</a>
+    <a href="index.html">← 返回首页</a>
   </div>
 </body>
 </html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>税务Ukey或税盘 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .ukey-page { padding: 16px; padding-bottom: 24px; }
+    .ukey-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: var(--gray-100);
+      border-radius: var(--radius);
+      margin-bottom: 20px;
+    }
+    .ukey-section-left { flex: 1; min-width: 0; }
+    .ukey-section h3 { font-size: 16px; margin: 0 0 6px; color: var(--gray-900); }
+    .ukey-section p { font-size: 13px; color: var(--gray-600); margin: 0; line-height: 1.5; }
+    .ukey-section .arrow { color: var(--gray-500); font-size: 18px; margin-left: 8px; }
+    .ukey-section a { text-decoration: none; color: inherit; display: flex; align-items: center; }
+
+    .ukey-sheet-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 900; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s; }
+    .ukey-sheet-overlay.show { opacity: 1; visibility: visible; }
+    .ukey-sheet {
+      position: fixed; left: 0; right: 0; bottom: 0; background: var(--white); border-radius: 16px 16px 0 0;
+      z-index: 901; padding: 20px 16px calc(16px + env(safe-area-inset-bottom)); max-height: 70vh; overflow-y: auto;
+      transform: translateY(100%); transition: transform 0.3s ease; box-shadow: 0 -4px 20px rgba(0,0,0,0.15);
+    }
+    .ukey-sheet.show { transform: translateY(0); }
+    .ukey-option {
+      display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--gray-200);
+      cursor: pointer;
+    }
+    .ukey-option:last-of-type { border-bottom: none; }
+    .ukey-option-icon {
+      width: 48px; height: 48px; border-radius: 8px; background: var(--gray-100); display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: var(--gray-600); text-align: center; flex-shrink: 0;
+    }
+    .ukey-option-text { flex: 1; font-size: 15px; color: var(--gray-900); }
+    .ukey-option-radio { width: 20px; height: 20px; border: 2px solid var(--gray-300); border-radius: 50%; flex-shrink: 0; }
+    .ukey-option.selected .ukey-option-radio { border-color: var(--primary); background: var(--primary); }
+    .ukey-sheet-btns { display: flex; gap: 12px; margin-top: 20px; }
+    .ukey-sheet-btns button { flex: 1; padding: 14px; border-radius: var(--radius); font-size: 16px; font-weight: 500; cursor: pointer; border: none; }
+    .ukey-sheet-cancel { background: var(--white); color: var(--gray-700); border: 1px solid var(--gray-300); }
+    .ukey-sheet-confirm { background: var(--primary); color: var(--white); }
+    .ukey-open-btn {
+      margin-top: 16px; width: 100%; padding: 14px; border-radius: var(--radius); font-size: 16px; font-weight: 600;
+      border: none; cursor: pointer; background: var(--primary); color: var(--white);
+    }
+    .ukey-open-btn:active { background: var(--primary-dark); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">税务Ukey或税盘</h1>
+    </header>
+
+    <main class="ukey-page">
+      <a href="#" class="ukey-section" id="ukeySection">
+        <div class="ukey-section-left">
+          <h3>申领情况</h3>
+          <p>税务Ukey或税盘是从税局申请获得,是开发票必备的专业税控装置</p>
+        </div>
+        <span class="arrow">›</span>
+      </a>
+      <p style="font-size:14px;color:var(--gray-600);">点击上方「申领情况」或下方按钮选择您的设备类型</p>
+      <button type="button" class="ukey-open-btn" id="btnOpenSheet">选择税务Ukey/税盘类型</button>
+    </main>
+
+    <div class="ukey-sheet-overlay" id="ukeySheetOverlay"></div>
+    <div class="ukey-sheet" id="ukeySheet">
+      <div class="ukey-option selected" data-value="none">
+        <div class="ukey-option-icon">未申领</div>
+        <span class="ukey-option-text">未申领</span>
+        <span class="ukey-option-radio"></span>
+      </div>
+      <div class="ukey-option" data-value="ukey">
+        <div class="ukey-option-icon">税务Ukey</div>
+        <span class="ukey-option-text">税务Ukey</span>
+        <span class="ukey-option-radio"></span>
+      </div>
+      <div class="ukey-option" data-value="baiwang">
+        <div class="ukey-option-icon">百旺税盘</div>
+        <span class="ukey-option-text">百旺税盘</span>
+        <span class="ukey-option-radio"></span>
+      </div>
+      <div class="ukey-option" data-value="jinshui">
+        <div class="ukey-option-icon">金税盘</div>
+        <span class="ukey-option-text">金税盘</span>
+        <span class="ukey-option-radio"></span>
+      </div>
+      <div class="ukey-sheet-btns">
+        <button type="button" class="ukey-sheet-cancel" id="btnUkeyCancel">取消</button>
+        <button type="button" class="ukey-sheet-confirm" id="btnUkeyConfirm">确定</button>
+      </div>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    (function() {
+      var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: { COMPANY_SETTINGS: '/api/company/settings' } };
+      var token = localStorage.getItem('token');
+      var companyId = localStorage.getItem('currentCompanyId') || '';
+      var overlay = document.getElementById('ukeySheetOverlay');
+      var sheet = document.getElementById('ukeySheet');
+      var btnOpen = document.getElementById('btnOpenSheet');
+      var btnCancel = document.getElementById('btnUkeyCancel');
+      var btnConfirm = document.getElementById('btnUkeyConfirm');
+      var sectionTitle = document.querySelector('.ukey-section-left h3');
+      var valueToLabel = { none: '未申领', ukey: '税务Ukey', baiwang: '百旺税盘', jinshui: '金税盘' };
+      function needAuth() {
+        if (!token || !companyId) {
+          alert('请先登录并选择企业');
+          window.location.href = 'index.html';
+          return false;
+        }
+        return true;
+      }
+      function setSelected(value) {
+        document.querySelectorAll('.ukey-option').forEach(function(o) {
+          o.classList.remove('selected');
+          if ((o.getAttribute('data-value') || '') === value) o.classList.add('selected');
+        });
+        if (sectionTitle) sectionTitle.textContent = '申领情况：' + (valueToLabel[value] || valueToLabel.none);
+      }
+      function loadSettings() {
+        if (!needAuth()) return;
+        var url = (API.BASE_URL || '') + API.ENDPOINTS.COMPANY_SETTINGS + '?company_id=' + encodeURIComponent(companyId);
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(res) {
+            if (!res || res.code !== 0 || !res.data) return;
+            var v = (res.data.tax_ukey_type || 'none').toLowerCase();
+            if (!valueToLabel[v]) v = 'none';
+            setSelected(v);
+            if (btnOpen) btnOpen.textContent = '已选择 · 修改';
+          });
+      }
+      function saveAndClose() {
+        var opt = document.querySelector('.ukey-option.selected');
+        var value = opt ? (opt.getAttribute('data-value') || 'none') : 'none';
+        if (!needAuth()) { closeSheet(); return; }
+        var url = (API.BASE_URL || '') + API.ENDPOINTS.COMPANY_SETTINGS;
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ company_id: companyId, tax_ukey_type: value })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            closeSheet();
+            if (res.code === 0) {
+              setSelected(value);
+              if (btnOpen) btnOpen.textContent = '已选择 · 修改';
+              alert('保存成功');
+            } else { alert(res.message || '保存失败'); }
+          })
+          .catch(function() { closeSheet(); alert('保存失败'); });
+      }
+      function openSheet() { overlay.classList.add('show'); sheet.classList.add('show'); document.body.style.overflow = 'hidden'; }
+      function closeSheet() { overlay.classList.remove('show'); sheet.classList.remove('show'); document.body.style.overflow = ''; }
+      document.querySelectorAll('.ukey-option').forEach(function(el) {
+        el.addEventListener('click', function() {
+          document.querySelectorAll('.ukey-option').forEach(function(o) { o.classList.remove('selected'); });
+          el.classList.add('selected');
+        });
+      });
+      if (btnOpen) btnOpen.addEventListener('click', openSheet);
+      if (btnCancel) btnCancel.addEventListener('click', closeSheet);
+      if (btnConfirm) btnConfirm.addEventListener('click', saveAndClose);
+      if (overlay) overlay.addEventListener('click', closeSheet);
+      loadSettings();
+    })();
+  </script>
+</body>
+</html>

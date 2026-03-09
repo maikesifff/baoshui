@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>设置 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .settings-page { padding: 16px; }
+    .settings-section { margin-bottom: 24px; }
+    .settings-section h3 { font-size: 14px; color: var(--gray-500); margin-bottom: 8px; }
+    .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background: #fff; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .settings-item label { font-size: 15px; }
+    .settings-about { font-size: 13px; color: var(--gray-500); padding: 16px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">设置</h1>
+    </header>
+    <main class="settings-page">
+      <div class="settings-section">
+        <h3>通知</h3>
+        <div class="settings-item">
+          <label>接收通知</label>
+          <input type="checkbox" id="settingNotification" checked />
+        </div>
+      </div>
+      <div class="settings-section">
+        <h3>关于</h3>
+        <div class="settings-about">自报税 v1.0</div>
+      </div>
+    </main>
+  </div>
+  <script src="config.js"></script>
+  <script>
+(function() {
+  var token = localStorage.getItem('token');
+  var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: {} };
+  var cb = document.getElementById('settingNotification');
+  if (!token) {
+    window.location.href = 'index.html';
+    return;
+  }
+  var url = (API.BASE_URL || '') + (API.ENDPOINTS.USER_SETTINGS || '/api/user/settings');
+  fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      if (res.code === 0 && res.data && res.data.notification_enabled !== undefined) {
+        cb.checked = res.data.notification_enabled === '1' || res.data.notification_enabled === true;
+      }
+    });
+  cb.addEventListener('change', function() {
+    var saveUrl = (API.BASE_URL || '') + (API.ENDPOINTS.USER_SETTINGS || '/api/user/settings');
+    fetch(saveUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ key: 'notification_enabled', value: cb.checked ? '1' : '0' })
+    });
+  });
+})();
+  </script>
+</body>
+</html>

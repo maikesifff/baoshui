@@ -4,88 +4,354 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <meta name="theme-color" content="#2563eb">
-  <title>企业记账报税</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="自报税">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="manifest" href="manifest.json">
+  <title>自报税</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <div class="app">
-    <!-- 顶部装饰 -->
-    <div class="header-bg"></div>
+    <!-- 主内容区：多面板切换，底部栏不变 -->
+    <main class="main-content" id="mainContent">
+      <!-- 主页 -->
+      <div class="nav-panel active" id="panelHome">
+        <!-- 未登录：顶部「主页」+ 落地页 -->
+        <div id="homeGuestView">
+          <header class="app-header app-header-simple">
+            <span class="header-title">主页</span>
+          </header>
+          <div class="home-landing">
+            <h1 class="home-landing-title">自报税</h1>
+            <p class="home-landing-desc">首次使用,客服指导您迁入旧账、完成记账报税事项,轻松上手</p>
+            <button type="button" class="btn-register btn-register-hero" id="btnRegister">注册/登录</button>
 
-    <!-- 主内容区 -->
-    <main class="main-content">
-      <!-- 企业记账报税模块 -->
-      <section class="card intro-card">
-        <span class="badge">企业记账报税</span>
-        <p class="intro-text">首次使用，客服指导您迁入旧账、完成记账报税事项，轻松上手</p>
-        <button class="btn-register" id="btnRegister">注册/登录</button>
-        <a href="/download" class="link-download">下载 APP</a>
-      </section>
+            <section class="landing-block">
+              <div class="landing-block-row">
+                <div class="landing-block-content">
+                  <h3 class="landing-block-title">套餐价格</h3>
+                  <p class="landing-block-text">个体户/小规模纳税人: 29.99元/月、69.99元每/月; 一般纳税人: 99.99元/月、149元/月</p>
+                  <a href="pricing.html" class="landing-block-link">查看套餐价格详情</a>
+                </div>
+                <span class="landing-block-icon landing-block-icon-orange">¥</span>
+              </div>
+            </section>
 
-      <!-- 套餐价格模块 -->
-      <section class="card price-card">
-        <span class="badge">套餐价格</span>
-        <div class="price-content">
-          <div class="price-text">
-            <p>个体户/小规模纳税人: 29.99元/月、69.99元/月;</p>
-            <p>一般纳税人: 99.99元/月、149元/月</p>
+            <section class="landing-block">
+              <div class="landing-block-row">
+                <div class="landing-block-content">
+                  <h3 class="landing-block-title">自报税APP怎么用</h3>
+                  <p class="landing-block-text">企业无业务,每个月自动记账报税; 企业有业务,每个月花5到10分钟完成记账,自动报税</p>
+                  <a href="video-guide.html" class="landing-block-link">查看新手引导视频</a>
+                </div>
+                <span class="landing-block-icon landing-block-icon-pink">▶</span>
+              </div>
+            </section>
+
+            <section class="landing-block">
+              <h3 class="landing-block-title">功能服务介绍</h3>
+              <div class="landing-feature-grid">
+                <a href="feature-self-accounting.html" class="landing-feature-item"><span class="landing-feature-icon">📒</span><span>自助记账</span></a>
+                <a href="feature-auto-tax.html" class="landing-feature-item"><span class="landing-feature-icon">📋</span><span>自动报税</span></a>
+                <a href="feature-tax-annual.html" class="landing-feature-item"><span class="landing-feature-icon">📑</span><span>税务年报</span></a>
+                <a href="feature-realtime-ledger.html" class="landing-feature-item"><span class="landing-feature-icon">✓</span><span>实时查账</span></a>
+                <a href="feature-social-security.html" class="landing-feature-item"><span class="landing-feature-icon">🛡</span><span>申报社保</span></a>
+                <a href="feature-business-annual.html" class="landing-feature-item"><span class="landing-feature-icon">📄</span><span>工商年报</span></a>
+              </div>
+            </section>
+
+            <section class="landing-block">
+              <h3 class="landing-block-title">关于自报税</h3>
+              <div class="landing-stats">
+                <span>1100万次 自动报税</span>
+                <span>30万+ 已服务企业</span>
+                <span>6年+ 已连续运营</span>
+                <span>19年 财务团队经验</span>
+                <span>32个 覆盖省/直辖市</span>
+              </div>
+              <div class="landing-license">
+                <span>证照资质</span>
+                <span class="landing-license-arrow">›</span>
+              </div>
+              <p class="landing-license-note">(代账许可证、高新技术企业、专利、软著等)</p>
+            </section>
+
+            <p class="home-landing-slogan">创业小白可以自报税</p>
           </div>
-          <span class="price-icon">¥</span>
         </div>
-        <a href="#" class="link-detail">查看套餐价格详情</a>
-      </section>
 
-      <!-- 自记账APP怎么用 -->
-      <section class="card usage-card">
-        <span class="badge">自记账APP怎么用</span>
-        <div class="usage-content">
-          <div class="usage-text">
-            <p>企业无业务,每个月自动记账报税;</p>
-            <p>企业有业务,每个月花5到10分钟完成记账,自动报税</p>
+        <!-- 已登录：选择企业栏 + 主内容 -->
+        <div id="homeLoggedView" style="display:none">
+          <header class="app-header">
+            <div class="header-company" id="headerCompany">
+              <span class="company-name" id="companyNameDisplay">请选择企业</span>
+              <span class="company-chevron" id="companyChevron">▾</span>
+            </div>
+            <button class="header-menu" id="headerMenu" aria-label="菜单">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+              <span class="menu-dot" id="menuDot"></span>
+            </button>
+          </header>
+          <div class="company-dropdown" id="companyDropdown">
+            <div class="company-list" id="companyList"></div>
+            <button class="btn-add-company" id="btnAddCompany">添加企业</button>
           </div>
-          <button class="btn-video" aria-label="播放视频">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-          </button>
+          <div class="main-content-top">
+            <div class="main-tabs">
+              <button class="main-tab active" data-tab="account">记账</button>
+              <button class="main-tab" data-tab="audit">审账</button>
+              <button class="main-tab" data-tab="tax">报税</button>
+            </div>
+            <div class="progress-line" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="3">
+              <span class="progress-dot active" data-tab="account"></span>
+              <span class="progress-segment"></span>
+              <span class="progress-dot" data-tab="audit"></span>
+              <span class="progress-segment"></span>
+              <span class="progress-dot" data-tab="tax"></span>
+            </div>
+            <div class="period-info-wrap">
+              <div class="period-info active" data-tab="account">
+                <p>正在记 -- 月账, 录入时间: --</p>
+                <p class="period-remain">剩余 --</p>
+              </div>
+              <div class="period-info" data-tab="audit">
+                <p>完成记账后开始审账</p>
+                <p class="period-remain">由自报税财务审核</p>
+              </div>
+              <div class="period-info" data-tab="tax">
+                <p>将在3月10日~16日完成本期报税</p>
+                <p class="period-remain">由自报税自动申报</p>
+              </div>
+            </div>
+            <div class="action-btns">
+              <a href="report.html" class="action-btn"><span class="action-icon">📊</span>财务报表</a>
+              <a href="documents.html" class="action-btn"><span class="action-icon">📄</span>单据明细</a>
+            </div>
+          </div>
+          <div class="todo-tabs">
+            <button class="todo-tab active" data-todo="todo">我的待办</button>
+            <button class="todo-tab" data-todo="notice">我的通知</button>
+          </div>
+          <div class="todo-panel todo-panel-todo active" id="todoPanelTodo">
+          <div class="todo-list" id="todoList">
+            <div class="todo-step-block">
+              <div class="todo-step-title">第一步: 加自报税客服, 选择记账方式, 对接更高效</div>
+              <div class="todo-fixed-card">
+                <span class="todo-fixed-icon todo-fixed-icon-orange">👤</span>
+                <div class="todo-fixed-card-content">
+                  <p class="todo-fixed-card-title">请加自报税客服</p>
+                  <p class="todo-fixed-card-sub">加客服微信, 才能提供记账报税服务</p>
+                </div>
+                <button type="button" class="todo-fixed-btn" id="btnTodoWechat">客服微信</button>
+              </div>
+              <div class="todo-fixed-card">
+                <span class="todo-fixed-icon todo-fixed-icon-purple">📋</span>
+                <div class="todo-fixed-card-content">
+                  <p class="todo-fixed-card-title">选择记账方式</p>
+                  <p class="todo-fixed-card-sub">根据经营情况选择手动或自动记账</p>
+                </div>
+                <a href="choose-bookkeeping.html" class="todo-fixed-btn" id="todoBtnBookkeeping" data-todo-btn="bookkeeping">立即选择</a>
+              </div>
+            </div>
+            <div class="todo-step-block">
+              <div class="todo-step-title">第二步: 开通正式版才能审账报税</div>
+              <div class="todo-fixed-card">
+                <span class="todo-fixed-icon todo-fixed-icon-blue">正</span>
+                <div class="todo-fixed-card-content">
+                  <p class="todo-fixed-card-title">开通正式版</p>
+                  <p class="todo-fixed-card-sub">当前试用版不包含审账报税服务</p>
+                </div>
+                <button type="button" class="todo-fixed-btn" id="btnTodoOpen">立即开通</button>
+              </div>
+            </div>
+            <div class="todo-step-block">
+              <div class="todo-step-title">第三步: 完成税局相关信息, 用于申报企业税</div>
+              <div class="todo-fixed-card">
+                <span class="todo-fixed-icon todo-fixed-icon-orange">📁</span>
+                <div class="todo-fixed-card-content">
+                  <p class="todo-fixed-card-title">填写税局登录信息</p>
+                  <p class="todo-fixed-card-sub">用于申报企业税</p>
+                </div>
+                <a href="tax-bureau-login.html" class="todo-fixed-btn" id="todoBtnTaxBureau" data-todo-btn="tax_bureau">立即处理</a>
+              </div>
+              <div class="todo-fixed-card">
+                <span class="todo-fixed-icon todo-fixed-icon-orange">🔑</span>
+                <div class="todo-fixed-card-content">
+                  <p class="todo-fixed-card-title">税务Ukey或税盘</p>
+                  <p class="todo-fixed-card-sub">用于申报企业税</p>
+                </div>
+                <a href="tax-ukey.html" class="todo-fixed-btn" id="todoBtnTaxUkey" data-todo-btn="tax_ukey">立即处理</a>
+              </div>
+            </div>
+            <div class="todo-step-block">
+              <div class="todo-step-title">第四步: 填写个税信息, 用于申报个税</div>
+              <div class="todo-fixed-card">
+                <span class="todo-fixed-icon todo-fixed-icon-cyan">✎</span>
+                <div class="todo-fixed-card-content">
+                  <p class="todo-fixed-card-title">提供个税登录信息</p>
+                  <p class="todo-fixed-card-sub">添加办税员</p>
+                </div>
+                <a href="personal-tax-login.html" class="todo-fixed-btn" id="todoBtnPersonalTax" data-todo-btn="personal_tax">立即处理</a>
+              </div>
+            </div>
+            <p class="todo-footer-tip">按记账月份将纸质票据订在一起, 妥善保管, <a href="javascript:void(0)" id="todoDetailLink">详情&gt;</a></p>
+            <p class="todo-footer-slogan">创业小白可以自报税</p>
+          </div>
+          </div>
+          <div class="todo-panel todo-panel-notice" id="todoPanelNotice">
+            <div class="todo-notice-empty" id="todoNoticeEmpty">
+              <p class="todo-notice-empty-text">暂无通知</p>
+            </div>
+            <div id="todoNoticeList" class="todo-notice-list" style="display:none"></div>
+          </div>
         </div>
-      </section>
+      </div>
+      <!-- 聊天 -->
+      <div class="nav-panel" id="panelChat">
+        <header class="panel-header">
+          <h1 class="panel-header-title">聊天</h1>
+        </header>
+        <!-- 视图 A：对话列表（默认） -->
+        <div id="chatConversationListWrap" class="chat-conversation-list-wrap" style="display:none">
+          <ul id="chatConversationList" class="chat-conversation-list"></ul>
+        </div>
+        <!-- 视图 B：会话详情（点击列表项后） -->
+        <div id="chatDetailWrap" class="chat-detail-wrap" style="display:none">
+          <header class="chat-detail-header">
+            <button type="button" class="chat-detail-back" id="chatDetailBack" aria-label="返回">← 返回</button>
+            <span class="chat-detail-title">客服</span>
+          </header>
+          <div class="chat-list-wrap">
+            <div id="chatMessageList"></div>
+            <div class="chat-input-wrap">
+              <input type="text" id="chatInput" placeholder="输入消息..." />
+              <button type="button" id="chatSend">发送</button>
+            </div>
+          </div>
+        </div>
+        <div class="placeholder-panel" id="chatPlaceholder">
+          <p class="placeholder-title">暂无对话</p>
+          <p class="placeholder-desc">请登录后查看对话列表</p>
+        </div>
+      </div>
+      <!-- 发现 -->
+      <div class="nav-panel" id="panelDiscover">
+        <header class="panel-header">
+          <h1 class="panel-header-title">发现</h1>
+        </header>
+        <div id="discoverListWrap" style="display:none"></div>
+        <div class="placeholder-panel" id="discoverPlaceholder">
+          <p class="placeholder-title">暂无内容</p>
+          <p class="placeholder-desc">暂无动态</p>
+        </div>
+      </div>
+      <!-- 我的 -->
+      <div class="nav-panel" id="panelMine">
+        <header class="panel-header">
+          <h1 class="panel-header-title">我的</h1>
+        </header>
+        <div class="mine-content">
+          <div id="mineGuest">
+            <button type="button" class="mine-auth-btn" id="mineLoginRegister">登录/注册</button>
+          </div>
+          <div id="mineLogged" style="display:none" aria-hidden="true">
+            <div class="mine-profile-header">
+              <div class="mine-avatar" id="mineAvatar">头</div>
+              <div class="mine-profile-info">
+                <p class="mine-profile-name" id="minePhoneDisplay">--</p>
+                <p class="mine-profile-desc">已绑定手机号</p>
+              </div>
+            </div>
+            <div class="mine-menu-list">
+              <a href="my-companies.html" class="mine-menu-item">
+                <span class="mine-menu-icon">🏢</span>
+                <span class="mine-menu-text">我的企业</span>
+                <span class="mine-menu-arrow">›</span>
+              </a>
+              <a href="settings.html" class="mine-menu-item" id="mineSettings">
+                <span class="mine-menu-icon">⚙</span>
+                <span class="mine-menu-text">设置</span>
+                <span class="mine-menu-arrow">›</span>
+              </a>
+            </div>
+            <button type="button" class="mine-auth-btn mine-logout-btn" id="mineLogout">退出登录</button>
+          </div>
+        </div>
+      </div>
     </main>
 
     <!-- 底部导航栏 -->
     <nav class="bottom-nav">
-      <a href="#" class="nav-item active">
+      <a href="javascript:void(0)" class="nav-item active" data-panel="home">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
         <span>主页</span>
       </a>
-      <a href="#" class="nav-item">
+      <a href="javascript:void(0)" class="nav-item" data-panel="chat">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
         <span>聊天</span>
       </a>
-      <a href="#" class="nav-item nav-center">
+      <a href="javascript:void(0)" class="nav-item nav-center" data-panel="ledger" id="navLedger">
         <span class="nav-add">+</span>
         <span>记账</span>
       </a>
-      <a href="#" class="nav-item">
+      <a href="javascript:void(0)" class="nav-item" data-panel="discover">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
         <span>发现</span>
       </a>
-      <a href="#" class="nav-item">
+      <a href="javascript:void(0)" class="nav-item" data-panel="mine">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
         <span>我的</span>
       </a>
     </nav>
+
+    <!-- 记账：底部悬浮窗 -->
+    <div class="bottom-drawer-overlay" id="ledgerDrawerOverlay"></div>
+    <div class="bottom-drawer" id="ledgerDrawer">
+      <div class="bottom-drawer-handle"></div>
+      <div class="bottom-drawer-header">
+        <h2 class="bottom-drawer-title">记账</h2>
+        <button type="button" class="btn-close" id="btnCloseLedgerDrawer" aria-label="关闭">&times;</button>
+      </div>
+      <div class="bottom-drawer-body">
+        <div class="placeholder-panel" id="ledgerDrawerPlaceholder">
+          <p class="placeholder-title">记账</p>
+          <p class="placeholder-desc">按月份记录收支，支持分类与凭证上传</p>
+          <a href="ledger.html" class="btn-register btn-register-hero" style="display:inline-block;margin-top:12px;text-decoration:none">记一笔</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 未登录点击记账：居中提示弹窗 -->
+  <div class="modal-overlay modal-overlay-center" id="ledgerLoginPromptModal">
+    <div class="modal-center-box">
+      <p class="modal-center-text">请先登录</p>
+      <div class="modal-center-btns">
+        <button type="button" class="modal-center-btn modal-center-btn-cancel" id="ledgerLoginPromptCancel">取消</button>
+        <button type="button" class="modal-center-btn modal-center-btn-primary" id="ledgerLoginPromptLogin">登录</button>
+      </div>
+    </div>
   </div>
 
   <!-- 注册/登录弹窗 -->
   <div class="modal-overlay" id="registerModal">
     <div class="modal">
       <div class="modal-header">
-        <h2>注册/登录</h2>
+        <h2>注册 / 登录</h2>
         <button class="btn-close" id="btnCloseModal" aria-label="关闭">&times;</button>
       </div>
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-mode="register">注册</button>
+        <button type="button" class="auth-tab" data-mode="login">登录</button>
+      </div>
+      <!-- 注册表单：手机号、验证码、设置密码 -->
       <form class="register-form" id="registerForm">
         <div class="form-group">
-          <label for="phone">手机号</label>
-          <input type="tel" id="phone" placeholder="请输入手机号" required maxlength="11" pattern="[0-9]{11}">
+          <label for="phone">手机号 / 账号</label>
+          <input type="text" id="phone" placeholder="请输入手机号或账号" required autocomplete="username">
         </div>
         <div class="form-group">
           <label for="code">验证码</label>
@@ -94,9 +360,91 @@
             <button type="button" class="btn-code" id="btnSendCode">获取验证码</button>
           </div>
         </div>
-        <button type="submit" class="btn-submit">登录 / 注册</button>
+        <div class="form-group">
+          <label for="password">设置登录密码</label>
+          <input type="password" id="password" placeholder="请设置 6 位以上密码" minlength="6">
+        </div>
+        <button type="submit" class="btn-submit">注册</button>
       </form>
-      <p class="form-tip">未注册的手机号将自动创建账号</p>
+      <!-- 登录表单：验证码 / 密码 两种方式 -->
+      <form class="register-form" id="loginForm" style="display:none">
+        <div class="form-group">
+          <label for="loginPhone">手机号 / 账号</label>
+          <input type="text" id="loginPhone" placeholder="请输入手机号或账号" autocomplete="username">
+        </div>
+        <div class="form-group" id="loginCodeGroup">
+          <label for="loginCode">验证码</label>
+          <div class="input-with-btn">
+            <input type="text" id="loginCode" placeholder="请输入验证码" maxlength="6">
+            <button type="button" class="btn-code" id="btnLoginSendCode">获取验证码</button>
+          </div>
+        </div>
+        <div class="form-group" id="loginPwdGroup" style="display:none">
+          <label for="loginPassword">密码</label>
+          <input type="password" id="loginPassword" placeholder="请输入密码">
+        </div>
+        <button type="submit" class="btn-submit">登录</button>
+        <div class="login-mode-switch-wrap">
+          <a href="javascript:void(0)" class="login-mode-switch" id="loginModeSwitch">切换为密码登录</a>
+        </div>
+      </form>
+      <div class="auth-privacy-wrap">
+        <label class="auth-privacy-label">
+          <input type="checkbox" id="authPrivacyCheck" autocomplete="off">
+          <span>我已阅读并同意<a href="privacy.html?from=app" target="_blank" rel="noopener">《隐私政策》</a>，不勾选无法登录或注册</span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 添加企业页面 -->
+  <div class="page-overlay" id="addCompanyPage">
+    <div class="page-header">
+      <button class="btn-back" id="btnBackAddCompany" aria-label="返回">‹</button>
+      <h1>添加企业</h1>
+    </div>
+    <div class="add-company-content">
+      <div class="add-company-header"></div>
+      <div class="form-card">
+        <div class="form-group">
+          <label>企业/个体户全称</label>
+          <input type="text" id="addCompanyName" placeholder="请输入企业/个体户全称">
+        </div>
+        <div class="form-group">
+          <label>法人/经营者/执行事务合伙人</label>
+          <input type="text" id="addLegalPerson" placeholder="请输入完整的姓名/名称">
+        </div>
+      </div>
+      <a href="javascript:void(0)" class="link-unsupported" id="linkUnsupported">不支持的企业</a>
+      <button class="btn-submit btn-add-submit" id="btnSubmitAddCompany">提交</button>
+    </div>
+  </div>
+
+  <!-- 填写公司名称弹窗（注册后） -->
+  <div class="modal-overlay" id="companyModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2>填写公司名称</h2>
+        <button class="btn-close" id="btnCloseCompany" aria-label="关闭">&times;</button>
+      </div>
+      <form class="register-form" id="companyForm">
+        <div class="form-group">
+          <label for="companyName">公司名称</label>
+          <input type="text" id="companyName" placeholder="请输入公司名称" required>
+        </div>
+        <button type="submit" class="btn-submit">保存</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 通用提示弹窗（客服微信、详情、不支持的企业、设置等） -->
+  <div class="modal-overlay modal-overlay-center" id="tipModal">
+    <div class="modal-center-box">
+      <h3 class="tip-modal-title" id="tipModalTitle">提示</h3>
+      <div class="tip-modal-body" id="tipModalBody"></div>
+      <div class="modal-center-btns" style="margin-top:16px">
+        <button type="button" class="modal-center-btn modal-center-btn-primary" id="tipModalClose" style="flex:1">确定</button>
+      </div>
     </div>
   </div>
 

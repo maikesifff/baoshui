@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>查看新手引导视频 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .video-guide-page { padding: 16px; padding-bottom: 32px; }
+    .video-guide-player-wrap {
+      background: #000;
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin: 0 auto 16px;
+      max-width: 280px;
+      aspect-ratio: 9/16;
+    }
+    .video-guide-player-wrap video {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .video-guide-desc { font-size: 14px; color: var(--gray-700); line-height: 1.6; margin: 0; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">查看新手引导视频</h1>
+    </header>
+
+    <main class="video-guide-page">
+      <div class="video-guide-player-wrap">
+        <video controls playsinline webkit-playsinline preload="metadata" poster="">
+          <source src="video/2e9e64c1856829fe6fcf9052df8023fd.mp4" type="video/mp4">
+          您的浏览器不支持播放该视频。
+        </video>
+      </div>
+      <p class="video-guide-desc">企业无业务,每个月自动记账报税; 企业有业务,每个月花5到10分钟完成记账,自动报税。</p>
+    </main>
+  </div>
+</body>
+</html>

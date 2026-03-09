@@ -1,7 +1,7 @@
 {
-  "name": "企业记账报税",
+  "name": "自报税",
   "short_name": "记账报税",
-  "description": "企业记账报税应用",
+  "description": "自报税应用",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

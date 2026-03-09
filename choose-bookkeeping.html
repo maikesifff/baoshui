@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>选择记账方式 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .bookkeeping-page { padding: 16px; padding-bottom: 32px; }
+    .bookkeeping-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--gray-200);
+    }
+    .bookkeeping-card h2 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 0 0 10px;
+    }
+    .bookkeeping-card .card-desc {
+      font-size: 14px;
+      color: var(--gray-600);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .bookkeeping-card .card-apply {
+      font-size: 14px;
+      color: var(--gray-700);
+      margin-bottom: 10px;
+    }
+    .bookkeeping-card .card-apply .highlight { color: var(--orange); font-weight: 500; }
+    .bookkeeping-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px;
+    }
+    .bookkeeping-card li {
+      font-size: 14px;
+      color: var(--gray-700);
+      padding: 6px 0;
+      padding-left: 20px;
+      position: relative;
+      line-height: 1.4;
+    }
+    .bookkeeping-card li::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 10px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+    }
+    .bookkeeping-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .bookkeeping-btn:active { background: var(--primary-dark); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">选择记账方式</h1>
+    </header>
+
+    <main class="bookkeeping-page">
+      <div class="bookkeeping-card">
+        <h2>每个月手动完成记账事项</h2>
+        <p class="card-desc">每个月花5到10分钟完成记账事项(银行回单,收到的发票,工资单)</p>
+        <p class="card-apply">以下情况符合<span class="highlight">任意一项</span>的企业适用</p>
+        <ul>
+          <li>有开出发票(即有开出发票)</li>
+          <li>有收到发票(即有收到发票)</li>
+          <li>有对公户且有收入、支出的流水</li>
+          <li>有缴纳员工社保或公积金</li>
+        </ul>
+        <button type="button" class="bookkeeping-btn" id="btnBookkeepingManual" data-method="manual">我要手动记账</button>
+      </div>
+
+      <div class="bookkeeping-card">
+        <h2>每个月零申报(公司无业务)</h2>
+        <p class="card-desc">每个月由自报税系统自动完成记账事项,不需要你手动操作。</p>
+        <p class="card-apply">以下情况<span class="highlight">都符合</span>的企业适用</p>
+        <ul>
+          <li>没有开出发票(即没有开出发票)</li>
+          <li>没有收到发票(即没有收到发票)</li>
+          <li>没有对公户,或对公户只有利息收入、银行账户管理费支出</li>
+          <li>没有员工或只有一位员工</li>
+          <li>没有缴纳员工社保或公积金</li>
+          <li>没有互联网平台收入</li>
+        </ul>
+        <button type="button" class="bookkeeping-btn" id="btnBookkeepingZero" data-method="zero">我要零申报(公司无业务)</button>
+      </div>
+    </main>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    (function() {
+      var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: { COMPANY_SETTINGS: '/api/company/settings' } };
+      var token = localStorage.getItem('token');
+      var companyId = localStorage.getItem('currentCompanyId') || '';
+      function needAuth() {
+        if (!token || !companyId) {
+          alert('请先登录并选择企业');
+          window.location.href = 'index.html';
+          return false;
+        }
+        return true;
+      }
+      function loadSettings() {
+        if (!needAuth()) return;
+        var url = (API.BASE_URL || '') + API.ENDPOINTS.COMPANY_SETTINGS + '?company_id=' + encodeURIComponent(companyId);
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(res) {
+            if (!res || res.code !== 0 || !res.data) return;
+            var method = (res.data.bookkeeping_method || '').toLowerCase();
+            if (method === 'manual') document.getElementById('btnBookkeepingManual').textContent = '已选择 · 修改';
+            else if (method === 'zero') document.getElementById('btnBookkeepingZero').textContent = '已选择 · 修改';
+          });
+      }
+      function saveMethod(method) {
+        if (!needAuth()) return;
+        var url = (API.BASE_URL || '') + API.ENDPOINTS.COMPANY_SETTINGS;
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ company_id: companyId, bookkeeping_method: method })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code === 0) {
+              alert('保存成功');
+              document.getElementById('btnBookkeepingManual').textContent = method === 'manual' ? '已选择 · 修改' : '我要手动记账';
+              document.getElementById('btnBookkeepingZero').textContent = method === 'zero' ? '已选择 · 修改' : '我要零申报(公司无业务)';
+            } else { alert(res.message || '保存失败'); }
+          })
+          .catch(function() { alert('保存失败'); });
+      }
+      document.getElementById('btnBookkeepingManual').addEventListener('click', function() { saveMethod('manual'); });
+      document.getElementById('btnBookkeepingZero').addEventListener('click', function() { saveMethod('zero'); });
+      loadSettings();
+    })();
+  </script>
+</body>
+</html>

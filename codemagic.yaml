@@ -1,16 +1,17 @@
-# 企业记账报税 - Codemagic iOS 构建配置
+# 自报税 - Codemagic iOS 构建配置
 # 使用前请在 Codemagic 后台完成：
 # 1. 添加 App Store Connect 集成（API Key）
 # 2. 在 Code signing 中配置 iOS 签名（或使用自动签名）
 workflows:
   baoshui-ios:
-    name: 企业记账报税 iOS
+    name: 自报税 iOS
     max_build_duration: 120
     instance_type: mac_mini_m2
-    # ad_hoc 需在 Codemagic 后台手动上传 .p12 证书和 .mobileprovision
+    integrations:
+      app_store_connect: codemagic  # 在 Codemagic 后台创建并命名
     environment:
       ios_signing:
-        distribution_type: ad_hoc  # 真机测试用；上架 App Store 时改为 app_store
+        distribution_type: app_store
         bundle_identifier: com.baoshui.app
       vars:
         XCODE_PROJECT: "App.xcodeproj"
@@ -27,6 +28,7 @@ workflows:
           include: true
         - pattern: master
           include: true
+      source: true
     scripts:
       - name: 安装依赖
         script: npm ci
@@ -50,3 +52,6 @@ workflows:
             --scheme "$XCODE_SCHEME"
     artifacts:
       - ios/App/build/ios/ipa/*.ipa
+    publishing:
+      # 构建完成后可在 Codemagic 页面下载 IPA
+      # 如需自动上传 TestFlight，在 Codemagic 后台配置 App Store Connect 发布

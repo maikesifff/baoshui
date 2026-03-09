@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>个税登录信息 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .personaltax-banner {
+      background: #fff7ed;
+      color: #9a3412;
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .personaltax-card {
+      margin: 16px;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow);
+    }
+    .personaltax-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin: 0 0 20px;
+    }
+    .personaltax-card-title .icon { font-size: 20px; }
+    .personaltax-field {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+    .personaltax-field:last-of-type { border-bottom: none; }
+    .personaltax-label {
+      font-size: 14px;
+      color: var(--gray-700);
+      margin-bottom: 8px;
+    }
+    .personaltax-label .info-icon {
+      display: inline-flex; width: 16px; height: 16px; border-radius: 50%; background: var(--gray-300); color: var(--white);
+      font-size: 11px; font-weight: bold; align-items: center; justify-content: center; margin-left: 4px; vertical-align: middle;
+    }
+    .personaltax-input {
+      width: 100%;
+      border: none;
+      font-size: 15px;
+      color: var(--gray-900);
+      padding: 4px 0;
+      outline: none;
+    }
+    .personaltax-input::placeholder { color: var(--gray-400); }
+    .personaltax-pwd-hint {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+    .personaltax-btn {
+      display: block;
+      width: calc(100% - 32px);
+      margin: 24px 16px 0;
+      padding: 14px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .personaltax-btn:active { background: var(--primary-dark); }
+    .personaltax-desc {
+      margin: 24px 16px 32px;
+    }
+    .personaltax-desc h3 {
+      font-size: 14px;
+      color: var(--gray-700);
+      margin: 0 0 10px;
+    }
+    .personaltax-desc p {
+      font-size: 13px;
+      color: var(--gray-600);
+      line-height: 1.6;
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">个税登录信息</h1>
+    </header>
+
+    <div class="personaltax-banner">
+      使用个人所得税APP账号，自动添加个税办税员
+    </div>
+
+    <div class="personaltax-card">
+      <h2 class="personaltax-card-title">
+        <span class="icon">🛡</span>
+        个税APP登录信息
+      </h2>
+      <div class="personaltax-field">
+        <div class="personaltax-label">账号</div>
+        <input type="text" id="personaltaxAccount" class="personaltax-input" placeholder="请输入法人身份证或手机号">
+      </div>
+      <div class="personaltax-field">
+        <div class="personaltax-label">登录密码 <span class="info-icon" title="税局密码8-16位数字/字母/符号至少两种">①</span></div>
+        <p class="personaltax-pwd-hint">税局密码8-16位数字/字母/符号至少两种</p>
+        <input type="password" id="personaltaxPassword" class="personaltax-input" placeholder="请输入登录密码" style="margin-top:6px">
+      </div>
+    </div>
+
+    <button type="button" class="personaltax-btn" id="personaltaxSubmit">开始添加</button>
+
+    <div class="personaltax-desc">
+      <h3>添加办税员说明</h3>
+      <p>个税登录验证成功后，将自动添加"自报税客服"为个税办税员，用于申报您公司员工的个人所得税</p>
+    </div>
+  </div>
+  <script src="config.js"></script>
+  <script>
+    (function() {
+      var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: { COMPANY_SETTINGS: '/api/company/settings' } };
+      var token = localStorage.getItem('token');
+      var companyId = localStorage.getItem('currentCompanyId') || '';
+      function needAuth() {
+        if (!token || !companyId) {
+          alert('请先登录并选择企业');
+          window.location.href = 'index.html';
+          return false;
+        }
+        return true;
+      }
+      function loadSettings() {
+        if (!needAuth()) return;
+        var url = (API.BASE_URL || '') + API.ENDPOINTS.COMPANY_SETTINGS + '?company_id=' + encodeURIComponent(companyId);
+        fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(res) {
+            if (!res || res.code !== 0 || !res.data) return;
+            var d = res.data;
+            if (d.personal_tax_account) document.getElementById('personaltaxAccount').value = d.personal_tax_account;
+            if (d.personal_tax_password && d.personal_tax_password !== '******') document.getElementById('personaltaxPassword').value = d.personal_tax_password;
+          });
+      }
+      document.getElementById('personaltaxSubmit').addEventListener('click', function() {
+        if (!needAuth()) return;
+        var account = (document.getElementById('personaltaxAccount').value || '').trim();
+        var pwd = document.getElementById('personaltaxPassword').value || '';
+        if (!account || !pwd) { alert('请填写账号和密码'); return; }
+        var btn = this;
+        btn.disabled = true;
+        var url = (API.BASE_URL || '') + API.ENDPOINTS.COMPANY_SETTINGS;
+        fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ company_id: companyId, personal_tax_account: account, personal_tax_password: pwd })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code === 0) { alert('保存成功'); window.location.href = 'index.html'; }
+            else { alert(res.message || '保存失败'); }
+          })
+          .catch(function() { alert('保存失败'); })
+          .finally(function() { btn.disabled = false; });
+      });
+      loadSettings();
+    })();
+  </script>
+</body>
+</html>

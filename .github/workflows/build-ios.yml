@@ -55,7 +55,7 @@ jobs:
           tag_name: ios-${{ github.run_number }}
           name: iOS 构建 #${{ github.run_number }}
           body: |
-            企业记账报税 - iOS 模拟器版本
+            自报税 - iOS 模拟器版本
             - 仅适用于 Mac 上的 iOS 模拟器
             - 真机安装需在 Mac 上用 Xcode 构建 IPA
           files: App-simulator.zip

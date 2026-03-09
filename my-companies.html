@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>我的企业 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .my-companies-page { padding: 16px; padding-bottom: 32px; }
+    .my-companies-list { margin-bottom: 20px; }
+    .my-companies-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+    }
+    .my-companies-item-info { flex: 1; min-width: 0; }
+    .my-companies-item-name { font-size: 15px; font-weight: 600; color: var(--gray-900); margin: 0 0 4px; }
+    .my-companies-item-legal { font-size: 13px; color: var(--gray-500); margin: 0; }
+    .my-companies-item-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .my-companies-item-actions button {
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+    .my-companies-item-actions button.btn-edit:not(:disabled):active,
+    .my-companies-item-actions button.btn-delete:not(:disabled):active { opacity: 0.85; }
+    .my-companies-item-actions button.btn-edit { background: var(--primary); color: var(--white); }
+    .my-companies-add {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      text-align: center;
+      font-size: 15px;
+      color: var(--primary);
+      background: var(--white);
+      border: 1px dashed var(--primary);
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .my-companies-add:active { opacity: 0.9; }
+    .my-companies-empty { text-align: center; padding: 40px 20px; color: var(--gray-500); font-size: 14px; }
+    .my-companies-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000;
+      display: none; align-items: center; justify-content: center; padding: 20px;
+    }
+    .my-companies-modal-overlay.show { display: flex; }
+    .my-companies-modal {
+      width: 100%; max-width: 340px; background: var(--white); border-radius: var(--radius);
+      padding: 20px; box-shadow: var(--shadow-lg);
+    }
+    .my-companies-modal h3 { margin: 0 0 16px; font-size: 16px; color: var(--gray-900); }
+    .my-companies-modal .form-group { margin-bottom: 14px; }
+    .my-companies-modal .form-group label { display: block; font-size: 13px; color: var(--gray-600); margin-bottom: 4px; }
+    .my-companies-modal .form-group input {
+      width: 100%; padding: 10px 12px; font-size: 15px; border: 1px solid var(--gray-200); border-radius: 8px;
+    }
+    .my-companies-modal-btns { display: flex; gap: 10px; margin-top: 20px; }
+    .my-companies-modal-btns button { flex: 1; padding: 10px; border-radius: 8px; font-size: 15px; cursor: pointer; border: none; }
+    .my-companies-modal-btns .btn-cancel { background: var(--gray-100); color: var(--gray-700); }
+    .my-companies-modal-btns .btn-submit { background: var(--primary); color: var(--white); }
+    .mine-company-tag { font-size: 11px; color: var(--gray-500); font-weight: normal; margin-left: 6px; vertical-align: middle; }
+    .my-companies-item-actions button.btn-delete:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">我的企业</h1>
+    </header>
+
+    <main class="my-companies-page">
+      <div class="my-companies-list" id="companiesList"></div>
+      <div class="my-companies-empty" id="companiesEmpty" style="display:none">暂无企业，请添加</div>
+      <a href="javascript:void(0)" class="my-companies-add" id="btnAddCompany">+ 添加企业</a>
+    </main>
+  </div>
+
+  <!-- 添加/编辑 弹窗 -->
+  <div class="my-companies-modal-overlay" id="companyModal">
+    <div class="my-companies-modal">
+      <h3 id="companyModalTitle">添加企业</h3>
+      <form id="companyForm">
+        <input type="hidden" id="companyFormId" value="">
+        <div class="form-group">
+          <label for="companyFormName">企业/个体户全称</label>
+          <input type="text" id="companyFormName" placeholder="请输入企业全称" required>
+        </div>
+        <div class="form-group">
+          <label for="companyFormLegal">法人/经营者</label>
+          <input type="text" id="companyFormLegal" placeholder="选填">
+        </div>
+        <div class="my-companies-modal-btns">
+          <button type="button" class="btn-cancel" id="companyModalCancel">取消</button>
+          <button type="submit" class="btn-submit" id="companyModalSubmit">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script>
+(function() {
+  var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: { COMPANIES: '/api/user/companies', COMPANY_NAME: '/api/user/company-name' } };
+  var token = localStorage.getItem('token');
+  var listEl = document.getElementById('companiesList');
+  var emptyEl = document.getElementById('companiesEmpty');
+  var btnAdd = document.getElementById('btnAddCompany');
+  var modal = document.getElementById('companyModal');
+  var modalTitle = document.getElementById('companyModalTitle');
+  var form = document.getElementById('companyForm');
+  var formId = document.getElementById('companyFormId');
+  var formName = document.getElementById('companyFormName');
+  var formLegal = document.getElementById('companyFormLegal');
+  var btnCancel = document.getElementById('companyModalCancel');
+  var baseUrl = (API.BASE_URL || '');
+
+  function esc(s) {
+    if (s == null || s === undefined) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  function needLogin() {
+    if (!token) {
+      alert('请先登录');
+      window.location.href = 'index.html';
+      return false;
+    }
+    return true;
+  }
+
+  function loadList() {
+    if (!needLogin()) return;
+    fetch(baseUrl + API.ENDPOINTS.COMPANIES, { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.code === 401) { window.location.href = 'index.html'; return; }
+        var list = (res.data && res.data.length) ? res.data : [];
+        if (emptyEl) emptyEl.style.display = list.length === 0 ? 'block' : 'none';
+        if (!listEl) return;
+        listEl.innerHTML = '';
+        var currentId = (localStorage.getItem('currentCompanyId') || '').trim();
+        list.forEach(function(c) {
+          var id = c.id != null ? String(c.id) : '';
+          var name = c.name || '';
+          var legal = c.legalPerson || c.legal_person || '';
+          var isCurrent = (id === currentId);
+          var item = document.createElement('div');
+          item.className = 'my-companies-item';
+          item.innerHTML =
+            '<div class="my-companies-item-info">' +
+              '<p class="my-companies-item-name">' + (esc(name) || '未命名') + (isCurrent ? ' <span class="mine-company-tag">当前使用</span>' : '') + '</p>' +
+              (legal ? '<p class="my-companies-item-legal">' + esc(legal) + '</p>' : '') +
+            '</div>' +
+            '<div class="my-companies-item-actions">' +
+              '<button type="button" class="btn-edit" data-id="' + esc(id) + '" data-name="' + esc(name) + '" data-legal="' + esc(legal) + '">编辑</button>' +
+              '<button type="button" class="btn-delete" data-id="' + id + '"' + (isCurrent ? ' disabled title="请先切换到其他企业后再删除"' : '') + '>删除</button>' +
+            '</div>';
+          listEl.appendChild(item);
+        });
+        listEl.querySelectorAll('.btn-edit').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            formId.value = btn.getAttribute('data-id');
+            formName.value = btn.getAttribute('data-name') || '';
+            formLegal.value = btn.getAttribute('data-legal') || '';
+            modalTitle.textContent = '编辑企业';
+            modal.classList.add('show');
+          });
+        });
+        listEl.querySelectorAll('.btn-delete').forEach(function(btn) {
+          btn.addEventListener('click', function() {
+            if (btn.disabled) return;
+            var id = btn.getAttribute('data-id');
+            if (id === null || id === undefined) return;
+            var currentId = (localStorage.getItem('currentCompanyId') || '').trim();
+            if (id === currentId) {
+              alert('请先切换到其他企业后再删除当前企业');
+              return;
+            }
+            if (!confirm('确定删除该企业吗？')) return;
+            fetch(baseUrl + '/api/user/company-remove', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+              body: JSON.stringify({ company_id: id })
+            })
+              .then(function(r) { return r.json(); })
+              .then(function(res) {
+                if (res.code === 0) loadList();
+                else alert(res.message || '删除失败');
+              })
+              .catch(function() { alert('删除失败'); });
+          });
+        });
+      })
+      .catch(function() { if (emptyEl) emptyEl.style.display = 'block'; });
+  }
+
+  function openAddModal() {
+    formId.value = '';
+    formName.value = '';
+    formLegal.value = '';
+    modalTitle.textContent = '添加企业';
+    modal.classList.add('show');
+  }
+
+  function closeModal() {
+    modal.classList.remove('show');
+  }
+
+  if (btnAdd) btnAdd.addEventListener('click', function(e) { e.preventDefault(); openAddModal(); });
+  if (btnCancel) btnCancel.addEventListener('click', closeModal);
+  if (modal) modal.addEventListener('click', function(e) { if (e.target === modal) closeModal(); });
+
+  if (form) form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var id = (formId.value || '').trim();
+    var name = (formName.value || '').trim();
+    var legal = (formLegal.value || '').trim();
+    if (!name) { alert('请输入企业全称'); return; }
+    var submitBtn = document.getElementById('companyModalSubmit');
+    if (submitBtn) submitBtn.disabled = true;
+    if (id === '' || id === undefined) {
+      fetch(baseUrl + API.ENDPOINTS.COMPANIES, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ name: name, legal_person: legal })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (submitBtn) submitBtn.disabled = false;
+          if (res.code === 0) { closeModal(); loadList(); alert('添加成功'); }
+          else alert(res.message || '添加失败');
+        })
+        .catch(function() { if (submitBtn) submitBtn.disabled = false; alert('添加失败'); });
+    } else if (id === '0') {
+      fetch(baseUrl + API.ENDPOINTS.COMPANY_NAME, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ company_name: name })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (submitBtn) submitBtn.disabled = false;
+          if (res.code === 0) { closeModal(); loadList(); alert('修改成功'); }
+          else alert(res.message || '修改失败');
+        })
+        .catch(function() { if (submitBtn) submitBtn.disabled = false; alert('修改失败'); });
+    } else {
+      fetch(baseUrl + API.ENDPOINTS.COMPANIES + '/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ name: name, legal_person: legal })
+      })
+        .then(function(r) { return r.json(); })
+        .then(function(res) {
+          if (submitBtn) submitBtn.disabled = false;
+          if (res.code === 0) { closeModal(); loadList(); alert('修改成功'); }
+          else alert(res.message || '修改失败');
+        })
+        .catch(function() { if (submitBtn) submitBtn.disabled = false; alert('修改失败'); });
+    }
+  });
+
+  loadList();
+})();
+  </script>
+</body>
+</html>

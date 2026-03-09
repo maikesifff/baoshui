@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>记账 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .ledger-page { padding: 16px; padding-bottom: 32px; }
+    .ledger-period { margin-bottom: 16px; }
+    .ledger-period label { font-size: 14px; color: var(--gray-600); }
+    .ledger-period select { width: 100%; max-width: 200px; padding: 8px 12px; margin-top: 4px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 15px; }
+    .ledger-form { background: #fff; border-radius: 12px; padding: 16px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .ledger-form .form-row { margin-bottom: 12px; }
+    .ledger-form label { display: block; font-size: 13px; color: var(--gray-600); margin-bottom: 4px; }
+    .ledger-form input, .ledger-form select { width: 100%; padding: 10px 12px; border: 1px solid var(--gray-300); border-radius: 8px; font-size: 15px; box-sizing: border-box; }
+    .ledger-form .btn-submit { width: 100%; padding: 12px; background: var(--primary, #2563eb); color: #fff; border: none; border-radius: 8px; font-size: 16px; margin-top: 8px; }
+    .ledger-list { margin-top: 20px; }
+    .ledger-list h3 { font-size: 16px; margin-bottom: 12px; color: var(--gray-800); }
+    .ledger-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: #fff; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .ledger-item .amount-income { color: #059669; }
+    .ledger-item .amount-expense { color: #dc2626; }
+    .ledger-item .meta { font-size: 13px; color: var(--gray-500); }
+    .ledger-item .actions { display: flex; gap: 8px; }
+    .ledger-item .btn-edit, .ledger-item .btn-del { padding: 4px 10px; font-size: 13px; border-radius: 6px; border: none; background: var(--gray-200); }
+    .ledger-item .btn-del { background: #fee2e2; color: #dc2626; }
+    .ledger-empty { text-align: center; padding: 32px 16px; color: var(--gray-500); font-size: 14px; }
+    .ledger-login-tip { text-align: center; padding: 48px 24px; }
+    .ledger-login-tip p { margin-bottom: 16px; color: var(--gray-600); }
+    .ledger-login-tip a { display: inline-block; padding: 10px 20px; background: var(--primary); color: #fff; border-radius: 8px; text-decoration: none; }
+    .file-upload-wrap { margin-top: 8px; }
+    .file-upload-wrap input[type=file] { font-size: 13px; }
+    .attachments-preview { font-size: 12px; color: var(--gray-500); margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">记账</h1>
+    </header>
+    <main class="ledger-page" id="ledgerPage">
+      <div class="ledger-login-tip" id="ledgerLoginTip" style="display:none">
+        <p>请先登录并选择企业</p>
+        <a href="index.html">去登录</a>
+      </div>
+      <div id="ledgerContent" style="display:none">
+        <div class="ledger-period">
+          <label>记账月份</label>
+          <select id="ledgerPeriod"></select>
+        </div>
+        <div class="ledger-form">
+          <div class="form-row">
+            <label>类型</label>
+            <select id="ledgerType">
+              <option value="income">收入</option>
+              <option value="expense">支出</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>分类</label>
+            <select id="ledgerCategory"></select>
+          </div>
+          <div class="form-row">
+            <label>金额（元）</label>
+            <input type="number" id="ledgerAmount" step="0.01" placeholder="0.00" />
+          </div>
+          <div class="form-row">
+            <label>备注</label>
+            <input type="text" id="ledgerRemark" placeholder="选填" />
+          </div>
+          <div class="form-row file-upload-wrap">
+            <label>凭证（选填）</label>
+            <input type="file" id="ledgerFile" accept="image/*,.pdf" />
+            <div class="attachments-preview" id="attachmentsPreview"></div>
+          </div>
+          <button type="button" class="btn-submit" id="ledgerSubmit">记一笔</button>
+        </div>
+        <div class="ledger-list">
+          <h3>本页记录</h3>
+          <div id="ledgerList"></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="config.js"></script>
+  <script>
+(function() {
+  var token = localStorage.getItem('token');
+  var companyId = localStorage.getItem('currentCompanyId') || '';
+  var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: {} };
+  var categories = { income: [], expense: [] };
+  var uploadedPath = null;
+
+  function showContent(show) {
+    document.getElementById('ledgerLoginTip').style.display = show ? 'none' : 'block';
+    document.getElementById('ledgerContent').style.display = show ? 'block' : 'none';
+  }
+
+  if (!token || !companyId) {
+    showContent(false);
+    return;
+  }
+  showContent(true);
+
+  function buildPeriodOptions() {
+    var now = new Date();
+    var y = now.getFullYear();
+    var m = now.getMonth();
+    var arr = [];
+    for (var i = 0; i < 6; i++) {
+      var mm = m - i;
+      var yy = y;
+      if (mm < 0) { mm += 12; yy--; }
+      var period = yy + '-' + String(mm + 1).padStart(2, '0');
+      arr.push({ value: period, text: yy + '年' + (mm + 1) + '月' });
+    }
+    var sel = document.getElementById('ledgerPeriod');
+    sel.innerHTML = arr.map(function(p) { return '<option value="' + p.value + '">' + p.text + '</option>'; }).join('');
+  }
+
+  function loadCategories() {
+    var url = (API.BASE_URL || '') + (API.ENDPOINTS.LEDGER_CATEGORIES || '/api/ledger/categories');
+    fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.code !== 0 || !res.data) return;
+        categories.income = res.data.filter(function(c) { return c.type === 'income'; });
+        categories.expense = res.data.filter(function(c) { return c.type === 'expense'; });
+        fillCategorySelect();
+      });
+  }
+
+  function fillCategorySelect() {
+    var type = document.getElementById('ledgerType').value;
+    var list = type === 'income' ? categories.income : categories.expense;
+    var sel = document.getElementById('ledgerCategory');
+    sel.innerHTML = list.map(function(c) { return '<option value="' + c.id + '">' + (c.name || '') + '</option>'; }).join('');
+  }
+
+  document.getElementById('ledgerType').addEventListener('change', fillCategorySelect);
+
+  function getPeriod() {
+    return document.getElementById('ledgerPeriod').value;
+  }
+
+  function loadEntries() {
+    var period = getPeriod();
+    var url = (API.BASE_URL || '') + (API.ENDPOINTS.LEDGER_ENTRIES || '/api/ledger/entries') + '?company_id=' + encodeURIComponent(companyId) + '&period=' + encodeURIComponent(period);
+    fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        var listEl = document.getElementById('ledgerList');
+        if (res.code !== 0 || !res.data || !res.data.length) {
+          listEl.innerHTML = '<div class="ledger-empty">暂无记录，记一笔吧</div>';
+          return;
+        }
+        listEl.innerHTML = res.data.map(function(e) {
+          var amtCls = e.type === 'income' ? 'amount-income' : 'amount-expense';
+          var amtStr = (e.type === 'income' ? '+' : '-') + Number(e.amount).toFixed(2);
+          return '<div class="ledger-item" data-id="' + e.id + '">' +
+            '<div><span class="' + amtCls + '">' + amtStr + '</span> ' + (e.category_name || '') + '<div class="meta">' + (e.remark || '') + ' ' + (e.created_at ? e.created_at.slice(0, 16) : '') + '</div></div>' +
+            '<div class="actions"><button type="button" class="btn-del" data-id="' + e.id + '">删除</button></div></div>';
+        }).join('');
+        listEl.querySelectorAll('.btn-del').forEach(function(btn) {
+          btn.addEventListener('click', function() { deleteEntry(Number(btn.getAttribute('data-id'))); });
+        });
+      });
+  }
+
+  document.getElementById('ledgerPeriod').addEventListener('change', loadEntries);
+
+  function deleteEntry(id) {
+    if (!confirm('确定删除这条记录？')) return;
+    var url = (API.BASE_URL || '') + (API.ENDPOINTS.LEDGER_ENTRIES || '/api/ledger/entries') + '/delete';
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ entry_id: id })
+    }).then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.code === 0) loadEntries();
+        else alert(res.message || '删除失败');
+      });
+  }
+
+  document.getElementById('ledgerFile').addEventListener('change', function() {
+    var f = this.files[0];
+    if (!f) { uploadedPath = null; document.getElementById('attachmentsPreview').textContent = ''; return; }
+    var fd = new FormData();
+    fd.append('file', f);
+    var url = (API.BASE_URL || '') + (API.ENDPOINTS.UPLOAD || '/api/upload');
+    fetch(url, { method: 'POST', headers: { 'Authorization': 'Bearer ' + token }, body: fd })
+      .then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.code === 0 && res.data && res.data.file_path) {
+          uploadedPath = res.data.file_path;
+          document.getElementById('attachmentsPreview').textContent = '已选: ' + (f.name || '文件');
+        } else {
+          uploadedPath = null;
+          alert(res.message || '上传失败');
+        }
+      });
+  });
+
+  document.getElementById('ledgerSubmit').addEventListener('click', function() {
+    var period = getPeriod();
+    var type = document.getElementById('ledgerType').value;
+    var categoryId = document.getElementById('ledgerCategory').value;
+    var amount = document.getElementById('ledgerAmount').value;
+    var remark = document.getElementById('ledgerRemark').value;
+    if (!period || !categoryId || amount === '' || isNaN(parseFloat(amount))) {
+      alert('请填写月份、分类和金额');
+      return;
+    }
+    var payload = { company_id: companyId, period: period, type: type, category_id: parseInt(categoryId, 10), amount: parseFloat(amount), remark: remark };
+    if (uploadedPath) payload.attachment_paths = [uploadedPath];
+    var url = (API.BASE_URL || '') + (API.ENDPOINTS.LEDGER_ENTRIES || '/api/ledger/entries');
+    fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify(payload)
+    }).then(function(r) { return r.json(); })
+      .then(function(res) {
+        if (res.code === 0) {
+          document.getElementById('ledgerAmount').value = '';
+          document.getElementById('ledgerRemark').value = '';
+          document.getElementById('ledgerFile').value = '';
+          uploadedPath = null;
+          document.getElementById('attachmentsPreview').textContent = '';
+          loadEntries();
+        } else {
+          alert(res.message || '保存失败');
+        }
+      });
+  });
+
+  buildPeriodOptions();
+  loadCategories();
+  loadEntries();
+})();
+  </script>
+</body>
+</html>

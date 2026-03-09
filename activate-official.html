@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>开通正式版 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .activate-page { padding: var(--page-padding, 16px); padding-bottom: 32px; }
+    .activate-intro { margin-bottom: 20px; }
+    .activate-intro p { font-size: 14px; color: var(--gray-700); line-height: 1.6; margin: 0 0 12px; }
+    .activate-btns { display: flex; gap: 12px; margin-bottom: 24px; }
+    .activate-btns .btn { flex: 1; padding: 12px; text-align: center; font-size: 15px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; }
+    .activate-btns .btn-contact { background: var(--white); color: var(--gray-700); border: 1px solid var(--gray-200); }
+    .activate-btns .btn-open { background: var(--primary); color: var(--white); }
+    .activate-table-title { font-size: 15px; font-weight: 600; color: var(--gray-900); margin: 0 0 12px; }
+    .activate-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+    .activate-table th, .activate-table td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+    .activate-table th { background: var(--gray-50); font-weight: 600; color: var(--gray-700); }
+    .activate-table tr:last-child td { border-bottom: none; }
+    .activate-table .col-service { width: 42%; color: var(--gray-800); }
+    .activate-table .col-yes { color: var(--gray-600); }
+    .activate-table .col-no { color: var(--gray-500); }
+    .activate-table .note { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+    .page-header-right-link { position: absolute; right: var(--page-padding, 16px); top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">开通正式版</h1>
+      <a href="javascript:void(0)" class="page-header-right-link" id="linkRedeem">套餐兑换码</a>
+    </header>
+
+    <main class="activate-page">
+      <div class="activate-intro">
+        <p><strong>试用版：</strong>试用版仅支持记账体验，不支持一键报税和旧账导入。</p>
+        <p><strong>正式版：</strong>正式版会为你公司审账并申报所有税种，无需另外找代理记账。</p>
+      </div>
+      <div class="activate-btns">
+        <button type="button" class="btn btn-contact" id="btnContact">联系客服</button>
+        <a href="activate-official-order.html" class="btn btn-open" id="btnOpen">开通正式版</a>
+      </div>
+      <h2 class="activate-table-title">自报税套餐服务范围</h2>
+      <table class="activate-table">
+        <thead>
+          <tr>
+            <th class="col-service">服务内容</th>
+            <th>正式版</th>
+            <th>试用版</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="col-service">录入单据</td>
+            <td class="col-yes">包含</td>
+            <td class="col-no">包含</td>
+          </tr>
+          <tr>
+            <td class="col-service">每月记账、审账</td>
+            <td class="col-yes">包含</td>
+            <td class="col-no">不包含</td>
+          </tr>
+          <tr>
+            <td class="col-service">每月、每季度按时报税</td>
+            <td class="col-yes">包含</td>
+            <td class="col-no">不包含</td>
+          </tr>
+          <tr>
+            <td class="col-service">企业所得税年度汇算清缴</td>
+            <td class="col-yes">包含<span class="note">(年费用户专享)</span></td>
+            <td class="col-no">不包含</td>
+          </tr>
+          <tr>
+            <td class="col-service">经营所得税年度汇算清缴</td>
+            <td class="col-yes">包含<span class="note">(年费用户专享)</span></td>
+            <td class="col-no">不包含</td>
+          </tr>
+          <tr>
+            <td class="col-service">企业工商年报</td>
+            <td class="col-yes">包含<span class="note">(年费用户专享,提供工商年报大师软件辅助申报)</span></td>
+            <td class="col-no">不包含</td>
+          </tr>
+          <tr>
+            <td class="col-service">缴纳社保</td>
+            <td class="col-yes">包含<span class="note">(有业务套餐专享)</span></td>
+            <td class="col-no">不包含</td>
+          </tr>
+          <tr>
+            <td class="col-service">缴纳公积金</td>
+            <td class="col-no">不包含</td>
+            <td class="col-no">不包含</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+  <!-- 提示弹窗 -->
+  <div class="modal-overlay modal-overlay-center" id="tipModal">
+    <div class="modal-center-box">
+      <h3 class="tip-modal-title" id="tipModalTitle">提示</h3>
+      <div class="tip-modal-body" id="tipModalBody"></div>
+      <div class="modal-center-btns" style="margin-top:16px">
+        <button type="button" class="modal-center-btn modal-center-btn-primary" id="tipModalClose" style="flex:1">确定</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var tipModal = document.getElementById('tipModal');
+      var tipModalTitle = document.getElementById('tipModalTitle');
+      var tipModalBody = document.getElementById('tipModalBody');
+      function openTip(title, body) {
+        tipModalTitle.textContent = title;
+        tipModalBody.textContent = body;
+        tipModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeTip() {
+        tipModal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+      document.getElementById('tipModalClose').addEventListener('click', closeTip);
+      tipModal.addEventListener('click', function(e) { if (e.target === tipModal) closeTip(); });
+      document.getElementById('btnContact').addEventListener('click', function() {
+        var base = (function() {
+          var p = window.location.pathname;
+          if (/\/activate-official\.html$/i.test(p)) return p.replace(/\/activate-official\.html$/i, '');
+          return (p.replace(/\/[^/]+$/, '') || '/');
+        })();
+        fetch(base + '/api/config/contact').then(function(r) { return r.json(); }).then(function(res) {
+          var wechat = (res.data && res.data.wechat) ? res.data.wechat : '请通过应用内客服或官网获取';
+          var desc = (res.data && res.data.desc) ? res.data.desc : '如需帮助请联系客服。';
+          openTip('联系客服', '添加客服微信获取记账报税服务。\n\n客服微信号：' + wechat + '\n\n' + desc);
+        }).catch(function() {
+          openTip('联系客服', '添加客服微信获取记账报税服务。\n\n请通过应用内客服或官网获取微信号。');
+        });
+      });
+      document.getElementById('linkRedeem').addEventListener('click', function(e) {
+        e.preventDefault();
+        var p = window.location.pathname;
+        window.location.href = (p.replace(/\/[^/]+$/, '') || '/') + 'activate-official-order.html';
+      });
+    })();
+  </script>
+</body>
+</html>

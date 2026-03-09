@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>报表详情 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .report-detail-page { padding: 16px; }
+    .report-detail-empty { text-align: center; padding: 48px 24px; color: var(--gray-500); }
+    .report-detail-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    .report-detail-table th, .report-detail-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--gray-200); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="report.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title" id="reportDetailTitle">报表</h1>
+    </header>
+    <main class="report-detail-page">
+      <div id="reportDetailContent"></div>
+    </main>
+  </div>
+  <script src="config.js"></script>
+  <script>
+(function() {
+  var typeNames = { 'balance-sheet': '资产负债表', 'profit': '利润表', 'cash-flow': '现金流量表', 'fixed-assets': '固定资产', 'account-balance': '科目余额表' };
+  var type = (new URLSearchParams(window.location.search)).get('type') || 'balance-sheet';
+  document.getElementById('reportDetailTitle').textContent = typeNames[type] || '报表';
+  var token = localStorage.getItem('token');
+  var companyId = localStorage.getItem('currentCompanyId') || '';
+  var period = new Date().getFullYear() + '-' + String(new Date().getMonth() + 1).padStart(2, '0');
+  var API = window.API_CONFIG || { BASE_URL: '', ENDPOINTS: {} };
+  var endpoint = (API.ENDPOINTS['REPORT_' + type.toUpperCase().replace(/-/g, '_')] || '/api/report/' + type);
+  var url = (API.BASE_URL || '') + endpoint + '?company_id=' + encodeURIComponent(companyId) + '&period=' + encodeURIComponent(period);
+  if (!token) {
+    document.getElementById('reportDetailContent').innerHTML = '<div class="report-detail-empty">请先登录</div>';
+    return;
+  }
+  fetch(url, { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(function(r) { return r.json(); })
+    .then(function(res) {
+      var el = document.getElementById('reportDetailContent');
+      if (res.code !== 0 || !res.data || !res.data.rows || !res.data.rows.length) {
+        el.innerHTML = '<div class="report-detail-empty">暂无数据，完成记账后将在此展示</div>';
+        return;
+      }
+      var rows = res.data.rows;
+      el.innerHTML = '<table class="report-detail-table"><thead><tr>' + Object.keys(rows[0]).map(function(k) { return '<th>' + k + '</th>'; }).join('') + '</tr></thead><tbody>' +
+        rows.map(function(row) { return '<tr>' + Object.keys(row).map(function(k) { return '<td>' + (row[k] != null ? row[k] : '') + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>';
+    })
+    .catch(function() { document.getElementById('reportDetailContent').innerHTML = '<div class="report-detail-empty">加载失败</div>'; });
+})();
+  </script>
+</body>
+</html>

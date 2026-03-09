@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>记账报税 - 简洁版</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 15px;
+      color: #1f2937;
+      background: #f8fafc;
+      min-height: 100vh;
+    }
+    .page {
+      max-width: 420px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: #fff;
+    }
+    /* 顶部 */
+    .header {
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      padding: 16px 20px;
+      color: #fff;
+    }
+    .header-title {
+      font-size: 17px;
+      font-weight: 600;
+    }
+    .header-sub {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+    /* 主功能区 */
+    .main-card {
+      margin: 16px;
+      background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+      border-radius: 16px;
+      padding: 20px;
+      color: #fff;
+    }
+    .tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+      background: rgba(255,255,255,0.25);
+      color: #fff;
+    }
+    .tab.active {
+      background: #fff;
+      color: #2563eb;
+      font-weight: 600;
+    }
+    .status {
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+    .countdown {
+      font-size: 13px;
+      opacity: 0.9;
+      margin-bottom: 16px;
+    }
+    .actions {
+      display: flex;
+      gap: 12px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 12px 16px;
+      background: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 14px;
+      color: #1f2937;
+      cursor: pointer;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    /* 待办区 */
+    .section {
+      padding: 0 16px 24px;
+    }
+    .section-tabs {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .section-tab {
+      padding: 10px 0;
+      border: none;
+      background: none;
+      font-size: 15px;
+      color: #6b7280;
+      cursor: pointer;
+      position: relative;
+    }
+    .section-tab.active {
+      color: #2563eb;
+      font-weight: 600;
+    }
+    .section-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: #2563eb;
+    }
+    /* 待办列表 */
+    .todo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .todo-item {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .todo-item.done {
+      background: #f0f9ff;
+    }
+    .todo-content {
+      flex: 1;
+      min-width: 0;
+    }
+    .todo-step {
+      font-size: 14px;
+      color: #374151;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    .todo-desc {
+      font-size: 12px;
+      color: #6b7280;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .todo-badge {
+      font-size: 12px;
+      color: #2563eb;
+      flex-shrink: 0;
+    }
+    .todo-arrow {
+      font-size: 12px;
+      color: #9ca3af;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="header-title">上海黛丽思人力资源有限公司</div>
+      <div class="header-sub">自报税</div>
+    </header>
+
+    <div class="main-card">
+      <div class="tabs">
+        <button class="tab active">记账</button>
+        <button class="tab">审账</button>
+        <button class="tab">报税</button>
+      </div>
+      <div class="status">正在记2月账 · 录入时间: 2月24日~3月9日</div>
+      <div class="countdown">剩余 7天14小时9分</div>
+      <div class="actions">
+        <a href="/report.html" class="action-btn">📊 财务报表</a>
+        <button class="action-btn">📄 单据明细</button>
+      </div>
+    </div>
+
+    <section class="section">
+      <div class="section-tabs">
+        <button class="section-tab active">我的待办</button>
+        <button class="section-tab">我的通知</button>
+      </div>
+      <div class="todo-list">
+        <div class="todo-item done">
+          <div class="todo-content">
+            <div class="todo-step">第一步</div>
+            <div class="todo-desc">加自报税客服, 选择记账方式, 对接更高效</div>
+          </div>
+          <span class="todo-badge">已完成</span>
+          <span class="todo-arrow">▾</span>
+        </div>
+        <div class="todo-item done">
+          <div class="todo-content">
+            <div class="todo-step">第二步</div>
+            <div class="todo-desc">开通正式版才能审账报税</div>
+          </div>
+          <span class="todo-badge">已完成</span>
+          <span class="todo-arrow">▾</span>
+        </div>
+        <div class="todo-item">
+          <div class="todo-content">
+            <div class="todo-step">第三步</div>
+            <div class="todo-desc">完成税局相关信息, 用于申报企业税</div>
+          </div>
+          <span class="todo-arrow">▾</span>
+        </div>
+        <div class="todo-item">
+          <div class="todo-content">
+            <div class="todo-step">第四步</div>
+            <div class="todo-desc">填写个税信息, 用于申报个税</div>
+          </div>
+          <span class="todo-arrow">▾</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

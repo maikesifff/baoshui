@@ -1,10 +1,10 @@
 {
   "name": "baoshui",
   "version": "1.0.0",
-  "description": "企业记账报税应用的手机端页面，支持注册/登录功能。",
+  "description": "自报税应用的手机端页面，支持注册/登录功能。",
   "main": "app.js",
   "scripts": {
-    "build": "cp index.html styles.css app.js config.js www/",
+    "build": "cp index.html report.html styles.css report.css app.js report.js config.js www/",
     "cap:sync": "npm run build && npx cap sync",
     "cap:sync:android": "npm run build && npx cap sync android",
     "cap:sync:ios": "npm run build && npx cap sync ios",

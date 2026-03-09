@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>用户详情 - 后台管理</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      color: #1f2937;
+      background: #f1f5f9;
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    .admin-header {
+      background: #1e3a5f;
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .admin-nav-left { display: flex; align-items: center; gap: 6px; font-size: 18px; font-weight: 600; flex-wrap: wrap; }
+    .admin-nav-left a { color: #fff; text-decoration: none; }
+    .admin-nav-left a:hover { text-decoration: underline; }
+    .admin-nav-sep { opacity: 0.7; font-weight: normal; }
+    .admin-nav-current { font-weight: 600; }
+    .admin-nav-left .user-phone { font-family: ui-monospace, monospace; font-size: 16px; font-weight: 500; margin-left: 4px; }
+    .admin-nav-links { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+    .admin-nav-links a { color: rgba(255,255,255,0.95); text-decoration: none; font-size: 14px; cursor: pointer; }
+    .admin-nav-links a:hover { text-decoration: underline; }
+    .admin-nav-links a.active { font-weight: 600; }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f172a;
+      padding: 14px 20px;
+      border-bottom: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+    .card-body { padding: 20px; }
+    .info-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 12px 20px;
+      align-items: baseline;
+    }
+    .info-grid .label {
+      color: #64748b;
+      font-weight: 500;
+      font-size: 13px;
+    }
+    .info-grid .value {
+      color: #0f172a;
+      word-break: break-all;
+      font-family: ui-monospace, monospace;
+      font-size: 14px;
+      user-select: all;
+    }
+    .info-grid .value.empty { color: #94a3b8; font-style: normal; }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    table.data-table th,
+    table.data-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    table.data-table th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      font-size: 13px;
+    }
+    table.data-table tr:last-child td { border-bottom: none; }
+    table.data-table td {
+      color: #0f172a;
+      vertical-align: top;
+    }
+    table.data-table .mono { font-family: ui-monospace, monospace; user-select: all; }
+    .setting-block {
+      padding: 16px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .setting-block:last-child { border-bottom: none; padding-bottom: 0; }
+    .setting-block:first-child { padding-top: 0; }
+    .setting-block-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .setting-block-title .id { font-family: ui-monospace, monospace; color: #1e3a5f; }
+    .setting-block-title .name { font-weight: 500; color: #0f172a; margin-left: 4px; }
+    .setting-block-title .muted { font-size: 12px; font-weight: 400; color: #94a3b8; margin-left: auto; }
+    .empty-msg {
+      color: #94a3b8;
+      font-size: 14px;
+      padding: 24px 0;
+      text-align: center;
+    }
+    .state-error, .state-loading {
+      text-align: center;
+      padding: 48px 24px;
+      color: #64748b;
+    }
+    .state-error { color: #dc2626; }
+    .state-error a { color: #2563eb; }
+    .btn-reset-pwd {
+      padding: 8px 16px;
+      background: #dc2626;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .btn-reset-pwd:hover { background: #b91c1c; }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal-box { background: #fff; border-radius: 12px; padding: 24px; width: 100%; max-width: 380px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); }
+    .modal-box h3 { margin-bottom: 16px; font-size: 16px; color: #111827; }
+    .modal-box label { display: block; margin-bottom: 6px; color: #4b5563; font-weight: 500; font-size: 13px; }
+    .modal-box input { width: 100%; padding: 10px 12px; border: 1px solid #d1d5db; border-radius: 8px; margin-bottom: 14px; font-size: 14px; }
+    .modal-box input:focus { outline: none; border-color: #2563eb; }
+    .modal-box .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 16px; }
+    .modal-box .btn-secondary { padding: 8px 16px; background: #e5e7eb; color: #374151; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .modal-box .btn-secondary:hover { background: #d1d5db; }
+    .modal-box .modal-error { color: #dc2626; font-size: 13px; margin-top: 6px; }
+    @media print {
+      body { background: #fff; }
+      .admin-header { background: #1e3a5f; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .card { box-shadow: none; border: 1px solid #e2e8f0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="admin-header">
+    <div class="admin-nav-left">
+      <a href="admin.html" id="navBrand">后台管理</a>
+      <span class="admin-nav-sep">/</span>
+      <a href="#" id="backLink">用户管理</a>
+      <span class="admin-nav-sep">/</span>
+      <span class="admin-nav-current">用户详情</span>
+      <span class="user-phone" id="headerPhone">—</span>
+    </div>
+    <nav class="admin-nav-links">
+      <a href="admin.html">用户管理</a>
+      <a href="admin-redemption.html">兑换码</a>
+      <a href="admin-coupons.html">优惠券</a>
+      <a href="admin-notifications.html">通知</a>
+      <a href="admin-discover.html">发现</a>
+      <a href="admin-contact.html">客服配置</a>
+      <a href="javascript:void(0)" id="adminLogoutLink">退出</a>
+    </nav>
+  </header>
+  <main class="container" id="mainContent">
+    <div class="state-loading" id="stateLoading">加载中...</div>
+    <div class="state-error" id="stateError" style="display:none;"></div>
+    <div id="contentArea" style="display:none;"></div>
+    <div id="resetPwdModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>重置登录密码</h3>
+        <label for="resetPwdNew">新密码</label>
+        <input type="password" id="resetPwdNew" placeholder="至少 6 位" autocomplete="new-password">
+        <label for="resetPwdConfirm">确认新密码</label>
+        <input type="password" id="resetPwdConfirm" placeholder="再次输入新密码" autocomplete="new-password">
+        <p class="modal-error" id="resetPwdError"></p>
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" id="resetPwdCancel">取消</button>
+          <button type="button" class="btn-reset-pwd" id="resetPwdSubmit">确定</button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    (function() {
+      var base = (function() {
+        var p = window.location.pathname;
+        if (/\/admin-user\.html$/i.test(p)) return p.replace(/\/admin-user\.html$/i, '');
+        return (p.replace(/\/[^/]+$/, '') || '/');
+      })();
+      var token = localStorage.getItem('baoshui_admin_token');
+      var params = new URLSearchParams(window.location.search);
+      var phone = (params.get('phone') || '').trim();
+
+      var backLink = document.getElementById('backLink');
+      var headerPhone = document.getElementById('headerPhone');
+      var mainContent = document.getElementById('mainContent');
+      var stateLoading = document.getElementById('stateLoading');
+      var stateError = document.getElementById('stateError');
+      var contentArea = document.getElementById('contentArea');
+
+      document.getElementById('navBrand').href = base + '/admin.html';
+      backLink.href = base + '/admin.html';
+      document.getElementById('adminLogoutLink').addEventListener('click', function() { localStorage.removeItem('baoshui_admin_token'); window.location.href = base + '/admin.html'; });
+
+      var resetPwdModal = document.getElementById('resetPwdModal');
+      document.getElementById('resetPwdCancel').addEventListener('click', function() {
+        resetPwdModal.classList.remove('show');
+        document.getElementById('resetPwdError').textContent = '';
+      });
+      resetPwdModal.addEventListener('click', function(e) {
+        if (e.target === resetPwdModal) {
+          resetPwdModal.classList.remove('show');
+          document.getElementById('resetPwdError').textContent = '';
+        }
+      });
+      document.getElementById('resetPwdSubmit').addEventListener('click', function() {
+        var newPwd = (document.getElementById('resetPwdNew').value || '').trim();
+        var confirmPwd = (document.getElementById('resetPwdConfirm').value || '').trim();
+        var errEl = document.getElementById('resetPwdError');
+        errEl.textContent = '';
+        if (newPwd.length < 6) { errEl.textContent = '密码至少 6 位'; return; }
+        if (newPwd !== confirmPwd) { errEl.textContent = '两次输入的密码不一致'; return; }
+        var btn = document.getElementById('resetPwdSubmit');
+        btn.disabled = true;
+        fetch(base + '/api/admin/users/' + encodeURIComponent(phone) + '/reset-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({ password: newPwd })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code === 0) {
+              resetPwdModal.classList.remove('show');
+              alert('密码已重置');
+            } else {
+              errEl.textContent = res.message || '重置失败';
+            }
+          })
+          .catch(function() { errEl.textContent = '网络错误'; })
+          .finally(function() { btn.disabled = false; });
+      });
+      mainContent.addEventListener('click', function(e) {
+        if (e.target && e.target.id === 'btnResetPassword') {
+          document.getElementById('resetPwdError').textContent = '';
+          document.getElementById('resetPwdNew').value = '';
+          document.getElementById('resetPwdConfirm').value = '';
+          resetPwdModal.classList.add('show');
+        }
+      });
+
+      function showLoading() {
+        stateLoading.style.display = 'block';
+        stateError.style.display = 'none';
+        contentArea.style.display = 'none';
+      }
+      function showError(html) {
+        stateLoading.style.display = 'none';
+        stateError.style.display = 'block';
+        stateError.innerHTML = html;
+        contentArea.style.display = 'none';
+      }
+      function showContent(html) {
+        stateLoading.style.display = 'none';
+        stateError.style.display = 'none';
+        contentArea.style.display = 'block';
+        contentArea.innerHTML = html;
+      }
+
+      function escapeHtml(s) {
+        if (s == null || s === '') return '';
+        var div = document.createElement('div');
+        div.textContent = s;
+        return div.innerHTML;
+      }
+      /** 将后端返回的 UTC 时间字符串转为本地时间显示（后端 SQLite 存的是 UTC） */
+      function formatUtcToLocal(s) {
+        if (!s || typeof s !== 'string') return s || '—';
+        s = s.trim();
+        if (!s) return '—';
+        var iso = s.replace(' ', 'T');
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(iso) && iso.indexOf('Z') === -1 && iso.indexOf('+') === -1)
+          iso += 'Z';
+        var d = new Date(iso);
+        if (isNaN(d.getTime())) return s;
+        return d.toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+      }
+
+      if (!phone) {
+        headerPhone.textContent = '—';
+        showError('缺少用户参数 <code>phone</code>，请从<a href="' + escapeHtml(base + '/admin.html') + '">用户列表</a>进入。');
+        return;
+      }
+      headerPhone.textContent = phone;
+
+      if (!token) {
+        window.location.href = base + '/admin.html';
+        return;
+      }
+
+      showLoading();
+      fetch(base + '/api/admin/users/' + encodeURIComponent(phone), {
+        headers: { 'Authorization': 'Bearer ' + token }
+      })
+        .then(function(r) {
+          if (r.status === 401) {
+            localStorage.removeItem('baoshui_admin_token');
+            window.location.href = base + '/admin.html';
+            return Promise.reject(new Error('unauthorized'));
+          }
+          return r.json();
+        })
+        .then(function(res) {
+          if (!res) return;
+          if (res.code !== 0) {
+            if (res.code === 401) {
+              localStorage.removeItem('baoshui_admin_token');
+              window.location.href = base + '/admin.html';
+              return;
+            } else if (res.code === 404) {
+              showError('用户不存在：' + escapeHtml(phone) + '。');
+            } else {
+              showError(escapeHtml(res.message || '加载失败') + ' <a href="' + escapeHtml(base + '/admin.html') + '">返回列表</a>');
+            }
+            return;
+          }
+          var d = res.data;
+          var user = d.user || {};
+          var companies = d.companies || [];
+          var settings = d.company_settings || [];
+          var sessionsCount = d.sessions_count != null ? d.sessions_count : 0;
+
+          var html = '';
+
+          html += '<div class="card"><div class="card-title">基本信息</div><div class="card-body">';
+          html += '<div class="info-grid">';
+          html += '<span class="label">手机号</span><span class="value">' + escapeHtml(user.phone || '') + '</span>';
+          html += '<span class="label">注册时企业名</span><span class="value ' + (!user.company_name ? 'empty' : '') + '">' + escapeHtml(user.company_name || '—') + '</span>';
+          html += '<span class="label">注册时间</span><span class="value">' + escapeHtml(formatUtcToLocal(user.created_at)) + '</span>';
+          html += '<span class="label">更新时间</span><span class="value">' + escapeHtml(formatUtcToLocal(user.updated_at)) + '</span>';
+          html += '<span class="label">当前会话数</span><span class="value">' + sessionsCount + '</span>';
+          html += '</div>';
+          html += '<div style="margin-top:16px;"><button type="button" id="btnResetPassword" class="btn-reset-pwd">重置登录密码</button></div>';
+          html += '</div></div>';
+
+          html += '<div class="card"><div class="card-title">企业列表</div><div class="card-body">';
+          if (companies.length === 0) {
+            html += '<p class="empty-msg">暂无企业</p>';
+          } else {
+            html += '<table class="data-table"><thead><tr><th>ID</th><th>企业名称</th><th>法人/经营者</th><th>创建时间</th></tr></thead><tbody>';
+            companies.forEach(function(c) {
+              html += '<tr><td class="mono">' + escapeHtml(String(c.id)) + '</td><td>' + escapeHtml(c.name || '') + '</td><td>' + escapeHtml(c.legal_person || '') + '</td><td>' + escapeHtml(formatUtcToLocal(c.created_at)) + '</td></tr>';
+            });
+            html += '</tbody></table>';
+          }
+          html += '</div></div>';
+
+          html += '<div class="card"><div class="card-title">企业设置（税局/个税等）</div><div class="card-body">';
+          if (companies.length === 0) {
+            html += '<p class="empty-msg">暂无企业</p>';
+          } else {
+            companies.forEach(function(c) {
+              var cid = String(c.id);
+              var s = null;
+              for (var i = 0; i < settings.length; i++) {
+                if (String(settings[i].company_id) === cid) { s = settings[i]; break; }
+              }
+              html += '<div class="setting-block">';
+              html += '<div class="setting-block-title"><span class="id">ID ' + escapeHtml(cid) + '</span><span class="name">' + escapeHtml(c.name || '—') + '</span>';
+              if (s && s.updated_at) html += '<span class="muted">更新于 ' + escapeHtml(formatUtcToLocal(s.updated_at)) + '</span>';
+              html += '</div>';
+              if (!s) {
+                html += '<p class="empty-msg">该企业暂无设置</p>';
+              } else {
+                html += '<div class="info-grid">';
+                html += '<span class="label">记账方式</span><span class="value ' + (!s.bookkeeping_method ? 'empty' : '') + '">' + escapeHtml(s.bookkeeping_method || '—') + '</span>';
+                html += '<span class="label">税务 Ukey 类型</span><span class="value ' + (!s.tax_ukey_type ? 'empty' : '') + '">' + escapeHtml(s.tax_ukey_type || '—') + '</span>';
+                html += '<span class="label">税局网站</span><span class="value ' + (!s.tax_bureau_website ? 'empty' : '') + '">' + escapeHtml(s.tax_bureau_website || '—') + '</span>';
+                html += '<span class="label">税局登录方式</span><span class="value ' + (!s.tax_bureau_login_method ? 'empty' : '') + '">' + escapeHtml(s.tax_bureau_login_method || '—') + '</span>';
+                html += '<span class="label">税局法人身份证</span><span class="value mono ' + (!s.tax_bureau_legal_id ? 'empty' : '') + '">' + escapeHtml(s.tax_bureau_legal_id || '—') + '</span>';
+                html += '<span class="label">税局法人密码</span><span class="value mono ' + (!s.tax_bureau_legal_password ? 'empty' : '') + '">' + escapeHtml(s.tax_bureau_legal_password || '—') + '</span>';
+                html += '<span class="label">税局已验证</span><span class="value">' + (s.tax_bureau_verified ? '是' : '否') + '</span>';
+                html += '<span class="label">个税账号</span><span class="value ' + (!s.personal_tax_account ? 'empty' : '') + '">' + escapeHtml(s.personal_tax_account || '—') + '</span>';
+                html += '<span class="label">个税登录密码</span><span class="value mono ' + (!s.personal_tax_password ? 'empty' : '') + '">' + escapeHtml(s.personal_tax_password || '—') + '</span>';
+                html += '</div>';
+              }
+              html += '</div>';
+            });
+          }
+          html += '</div></div>';
+
+          html += '<div class="card"><div class="card-title">客服对话</div>';
+          html += '<p style="font-size:12px;color:#64748b;margin:-8px 0 12px 20px;">可主动发消息给用户发起对话</p>';
+          html += '<div class="card-body">';
+          html += '<div id="adminChatList" style="max-height:240px;overflow-y:auto;margin-bottom:12px;padding:8px;background:#f8fafc;border-radius:8px;"></div>';
+          html += '<div style="display:flex;gap:8px;align-items:flex-end;"><textarea id="adminChatReply" placeholder="输入消息发起对话或回复用户" style="flex:1;min-height:60px;padding:10px;border:1px solid #e2e8f0;border-radius:8px;font-size:14px;"></textarea>';
+          html += '<div style="display:flex;flex-direction:column;gap:8px;"><button type="button" id="adminChatStart" style="padding:8px 16px;background:#64748b;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;">发起对话</button><button type="button" id="adminChatSend" style="padding:10px 20px;background:#2563eb;color:#fff;border:none;border-radius:8px;cursor:pointer;">发送</button></div></div>';
+          html += '</div></div>';
+          showContent(html);
+
+          var chatPhone = user.phone || '';
+          if (chatPhone) {
+            fetch(base + '/api/admin/chat/' + encodeURIComponent(chatPhone), { headers: { 'Authorization': 'Bearer ' + token } })
+              .then(function(r) { return r.json(); })
+              .then(function(res) {
+                var listEl = document.getElementById('adminChatList');
+                if (!listEl) return;
+                if (res.code !== 0 || !res.data || !res.data.length) {
+                  listEl.innerHTML = '<p class="muted">暂无对话</p>';
+                  return;
+                }
+                listEl.innerHTML = res.data.map(function(m) {
+                  var from = m.direction === 'user' ? '用户' : '客服';
+                  return '<div style="margin-bottom:8px;"><span style="font-weight:500;">' + from + '</span> ' + (m.created_at ? m.created_at.slice(0, 19) : '') + '<br/><span style="color:#475569;">' + escapeHtml(m.content || '') + '</span></div>';
+                }).join('');
+              });
+            var replyEl = document.getElementById('adminChatReply');
+            var startBtn = document.getElementById('adminChatStart');
+            if (startBtn && replyEl) startBtn.addEventListener('click', function() { replyEl.focus(); });
+            document.getElementById('adminChatSend').addEventListener('click', function() {
+              var content = (replyEl && replyEl.value ? replyEl.value : '').trim();
+              if (!content) return;
+              fetch(base + '/api/admin/chat/reply', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ phone: chatPhone, content: content })
+              }).then(function(r) { return r.json(); }).then(function(res) {
+                if (res.code === 0) {
+                  replyEl.value = '';
+                  location.reload();
+                }
+              });
+            });
+          }
+        })
+        .catch(function() {
+          showError('网络错误，请<a href="' + escapeHtml(base + '/admin.html') + '">返回列表</a>重试。');
+        });
+    })();
+  </script>
+</body>
+</html>

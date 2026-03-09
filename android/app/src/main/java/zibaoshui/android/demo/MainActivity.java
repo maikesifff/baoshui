@@ -1,4 +1,4 @@
-package com.baoshui.app;
+package zibaoshui.android.demo;
 
 import com.getcapacitor.BridgeActivity;
 

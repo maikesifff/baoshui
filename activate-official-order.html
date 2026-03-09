@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>开通正式版 - 订单 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .order-page { padding: var(--page-padding, 16px); padding-bottom: 100px; }
+    .order-section { background: var(--white); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; border: 1px solid var(--gray-200); }
+    .order-section-title { font-size: 15px; font-weight: 600; color: var(--gray-900); margin: 0 0 14px; }
+    .radio-group { display: flex; flex-direction: column; gap: 10px; }
+    .radio-row { display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 14px; color: var(--gray-800); }
+    .radio-row input { width: 18px; height: 18px; accent-color: var(--primary); }
+    .radio-row .label-extra { color: var(--gray-500); font-size: 13px; margin-left: 4px; }
+    .order-detail-row { display: flex; justify-content: space-between; padding: 8px 0; font-size: 14px; color: var(--gray-700); }
+    .order-detail-row .label { color: var(--gray-600); }
+    .order-coupon { margin-top: 8px; }
+    .order-coupon a { font-size: 14px; color: var(--primary); text-decoration: none; }
+    .order-footer { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 430px; padding: 12px var(--page-padding); padding-bottom: calc(12px + env(safe-area-inset-bottom)); background: var(--white); border-top: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; }
+    .order-total { font-size: 16px; font-weight: 600; color: var(--gray-900); }
+    .order-total span { color: var(--red); }
+    .order-confirm-btn { padding: 12px 28px; font-size: 15px; font-weight: 500; background: var(--primary); color: var(--white); border: none; border-radius: 8px; cursor: pointer; }
+    .order-confirm-btn:active { opacity: 0.9; }
+    .page-header-right-link { position: absolute; right: var(--page-padding, 16px); top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--primary); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="page-header">
+      <a href="activate-official.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">开通正式版</h1>
+      <a href="javascript:void(0)" class="page-header-right-link" id="linkRedeem">套餐兑换码</a>
+    </header>
+
+    <main class="order-page">
+      <section class="order-section">
+        <h2 class="order-section-title">自报税购买套餐</h2>
+        <div class="radio-group">
+          <p style="font-size: 13px; color: var(--gray-600); margin: 0 0 8px;">纳税类型</p>
+          <label class="radio-row">
+            <input type="radio" name="taxType" value="small" checked>
+            <span>小规模纳税人</span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="taxType" value="general">
+            <span>一般纳税人</span>
+          </label>
+        </div>
+        <div class="radio-group" style="margin-top: 16px;">
+          <p style="font-size: 13px; color: var(--gray-600); margin: 0 0 8px;">记账类型</p>
+          <label class="radio-row">
+            <input type="radio" name="bizType" value="with" checked>
+            <span>有业务<span class="label-extra" id="labelWithPrice">(69.99元/月)</span></span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="bizType" value="without">
+            <span>无业务<span class="label-extra" id="labelWithoutPrice">(29.99元/月)</span></span>
+          </label>
+        </div>
+        <div class="radio-group" style="margin-top: 16px;">
+          <p style="font-size: 13px; color: var(--gray-600); margin: 0 0 8px;">开通时长</p>
+          <label class="radio-row">
+            <input type="radio" name="duration" value="1" checked>
+            <span>1个月<span class="label-extra">(仅限首次购买)</span></span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="duration" value="12">
+            <span>1年</span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="duration" value="24">
+            <span>2年<span class="label-extra">(送2个月)</span></span>
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="duration" value="36">
+            <span>3年<span class="label-extra">(送6个月)</span></span>
+          </label>
+        </div>
+      </section>
+      <section class="order-section">
+        <h2 class="order-section-title">订单详情</h2>
+        <div class="order-detail-row">
+          <span class="label">套餐月份</span>
+          <span id="orderMonths">1个月</span>
+        </div>
+        <div class="order-detail-row">
+          <span class="label">套餐金额</span>
+          <span id="orderAmount">69.99元</span>
+        </div>
+        <div class="order-coupon" style="margin-top:12px;">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input type="text" id="couponCodeInput" placeholder="优惠券码" style="flex:1;min-width:100px;padding:8px 12px;border:1px solid var(--gray-200);border-radius:8px;font-size:14px;">
+            <button type="button" id="btnCoupon" style="padding:8px 16px;font-size:14px;background:var(--gray-200);border:none;border-radius:8px;">使用</button>
+          </div>
+          <p id="couponApplied" style="font-size:13px;color:var(--primary);margin-top:6px;display:none;"></p>
+        </div>
+      </section>
+      <section class="order-section" id="redeemSection">
+        <h2 class="order-section-title">使用兑换码</h2>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+          <input type="text" id="redeemCodeInput" placeholder="请输入兑换码" style="flex:1;min-width:140px;padding:10px 12px;border:1px solid var(--gray-200);border-radius:8px;font-size:14px;">
+          <button type="button" class="order-confirm-btn" id="btnRedeem" style="padding:10px 20px;">兑换</button>
+        </div>
+      </section>
+    </main>
+    <footer class="order-footer">
+      <div class="order-total">合计：<span id="orderTotal">¥69.99</span></div>
+      <button type="button" class="order-confirm-btn" id="btnConfirm">确定</button>
+    </footer>
+  </div>
+  <!-- 提示弹窗 -->
+  <div class="modal-overlay modal-overlay-center" id="tipModal">
+    <div class="modal-center-box">
+      <h3 class="tip-modal-title" id="tipModalTitle">提示</h3>
+      <div class="tip-modal-body" id="tipModalBody"></div>
+      <div class="modal-center-btns" style="margin-top:16px">
+        <button type="button" class="modal-center-btn modal-center-btn-primary" id="tipModalClose" style="flex:1">确定</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function() {
+      var prices = {
+        small: { with: 69.99, without: 29.99 },
+        general: { with: 149, without: 99.99 }
+      };
+      var monthsMap = { '1': 1, '12': 12, '24': 24, '36': 36 };
+      var monthLabels = { '1': '1个月', '12': '1年', '24': '2年', '36': '3年' };
+      function getMonthPrice() {
+        var tax = document.querySelector('input[name="taxType"]:checked').value;
+        var biz = document.querySelector('input[name="bizType"]:checked').value;
+        return prices[tax][biz];
+      }
+      function getMonths() {
+        return parseInt(document.querySelector('input[name="duration"]:checked').value, 10);
+      }
+      function updateOrder() {
+        var tax = document.querySelector('input[name="taxType"]:checked').value;
+        var monthPrice = getMonthPrice();
+        var months = getMonths();
+        var total = Math.round(monthPrice * months * 100) / 100;
+        document.getElementById('labelWithPrice').textContent = '(' + prices[tax].with + '元/月)';
+        document.getElementById('labelWithoutPrice').textContent = '(' + prices[tax].without + '元/月)';
+        document.getElementById('orderMonths').textContent = (months === 1 ? '1个月' : months === 12 ? '1年' : months + '个月');
+        document.getElementById('orderAmount').textContent = total.toFixed(2) + '元';
+        document.getElementById('orderTotal').textContent = '¥' + total.toFixed(2);
+      }
+      ['taxType', 'bizType', 'duration'].forEach(function(name) {
+        document.querySelectorAll('input[name="' + name + '"]').forEach(function(radio) {
+          radio.addEventListener('change', updateOrder);
+        });
+      });
+      var tipModal = document.getElementById('tipModal');
+      var tipModalTitle = document.getElementById('tipModalTitle');
+      var tipModalBody = document.getElementById('tipModalBody');
+      function openTip(title, body) {
+        tipModalTitle.textContent = title;
+        tipModalBody.textContent = body;
+        tipModal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeTip() {
+        tipModal.classList.remove('show');
+        document.body.style.overflow = '';
+      }
+      document.getElementById('tipModalClose').addEventListener('click', closeTip);
+      tipModal.addEventListener('click', function(e) { if (e.target === tipModal) closeTip(); });
+      var base = (function() {
+        var p = window.location.pathname;
+        if (/\/activate-official-order\.html$/i.test(p)) return p.replace(/\/activate-official-order\.html$/i, '');
+        return (p.replace(/\/[^/]+$/, '') || '/');
+      })();
+      var token = localStorage.getItem('token');
+      var companyId = localStorage.getItem('currentCompanyId') || '';
+      if (!token) {
+        openTip('请先登录', '请先登录并选择企业后再使用兑换码或购买套餐。');
+        setTimeout(function() { window.location.href = base + '/index.html?openAuth=1'; }, 1500);
+      } else if (!companyId) {
+        openTip('请先选择企业', '您已登录，请先在主页选择或添加企业后再购买套餐。');
+        setTimeout(function() { window.location.href = base + '/index.html'; }, 1500);
+      }
+      document.getElementById('linkRedeem').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('redeemCodeInput').focus();
+      });
+      document.getElementById('linkCoupon').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('couponCodeInput').focus();
+      });
+      var couponAppliedEl = document.getElementById('couponApplied');
+      document.getElementById('btnCoupon').addEventListener('click', function() {
+        var code = (document.getElementById('couponCodeInput').value || '').trim();
+        if (!code) { openTip('提示', '请输入优惠券码'); return; }
+        fetch(base + '/api/order/validate-coupon', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code: code })
+        }).then(function(r) { return r.json(); }).then(function(res) {
+          if (res.code === 0 && res.data && res.data.valid) {
+            var t = res.data.discount_type;
+            var v = res.data.discount_value;
+            var text = t === 'percent' ? '已应用优惠：' + v + '折' : '已应用优惠：减' + v + '元';
+            if (couponAppliedEl) { couponAppliedEl.textContent = text; couponAppliedEl.style.display = 'block'; }
+          } else {
+            openTip('优惠券', res.message || '优惠券无效或已使用');
+          }
+        }).catch(function() { openTip('优惠券', '网络错误'); });
+      });
+      document.getElementById('btnConfirm').addEventListener('click', function() {
+        openTip('提示', '支付功能即将上线，请先使用下方兑换码兑换套餐。');
+        document.getElementById('redeemCodeInput').focus();
+      });
+      document.getElementById('btnRedeem').addEventListener('click', function() {
+        var code = (document.getElementById('redeemCodeInput').value || '').trim();
+        if (!code) { openTip('提示', '请输入兑换码'); return; }
+        var btn = this;
+        btn.disabled = true;
+        fetch(base + '/api/redemption/redeem', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: token, company_id: companyId, code: code })
+        })
+          .then(function(r) { return r.json(); })
+          .then(function(res) {
+            if (res.code === 0) {
+              var exp = (res.data && res.data.expires_at) ? res.data.expires_at : '';
+              openTip('兑换成功', '已为当前企业开通正式版，有效期至 ' + exp + '。');
+              document.getElementById('redeemCodeInput').value = '';
+            } else {
+              openTip('兑换失败', res.message || '请检查兑换码是否正确或是否已使用。');
+            }
+          })
+          .catch(function() { openTip('兑换失败', '网络错误，请重试。'); })
+          .finally(function() { btn.disabled = false; });
+      });
+      updateOrder();
+    })();
+  </script>
+</body>
+</html>

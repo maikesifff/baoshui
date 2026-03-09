@@ -1,0 +1,12 @@
+# 自报税 - 下载地址
+
+## 下载页
+http://1.117.47.129:8083/download
+
+## Android
+- APK: http://1.117.47.129:8083/download/app-debug.apk
+- 压缩包: http://1.117.47.129:8083/download/baoshui-apk.zip
+
+## iOS
+- 模拟器版(GitHub): http://1.117.47.129:8083/download/ios
+- 源码包: http://1.117.47.129:8083/download/baoshui-ios-source.zip

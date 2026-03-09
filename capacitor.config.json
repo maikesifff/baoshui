@@ -1,8 +1,12 @@
 {
-  "appId": "com.baoshui.app",
-  "appName": "企业记账报税",
+  "appId": "zibaoshui.android.demo",
+  "appName": "自报税",
   "webDir": "www",
   "server": {
-    "androidScheme": "http"
+    "url": "https://me.gaoxin.xin/baoshui/",
+    "cleartext": true
+  },
+  "android": {
+    "allowMixedContent": true
   }
 }

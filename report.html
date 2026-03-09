@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#2563eb">
+  <title>报表 - 自报税</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="report.css">
+</head>
+<body>
+  <div class="app">
+    <!-- 报表页顶部栏 -->
+    <header class="page-header">
+      <a href="index.html" class="btn-back" aria-label="返回">‹</a>
+      <h1 class="page-title">报表</h1>
+      <button class="header-menu" id="reportMenu" aria-label="菜单">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+        <span class="menu-dot" id="reportMenuDot"></span>
+      </button>
+    </header>
+
+    <main class="report-content">
+      <!-- 税额 -->
+      <section class="report-card">
+        <h2 class="report-card-title">税额</h2>
+        <p class="report-status" id="reportTaxStatus">--</p>
+        <p class="report-date" id="reportTaxPeriod">(--)</p>
+        <div class="report-links">
+          <a href="report-other-tax.html">查看其他税</a>
+          <a href="report-tax-history.html">报税历史</a>
+        </div>
+      </section>
+
+      <!-- 盈亏 -->
+      <section class="report-card">
+        <h2 class="report-card-title">盈亏</h2>
+        <div class="report-summary">
+          <div class="summary-col">
+            <span class="summary-value" id="reportEarned">--</span>
+            <span class="summary-label">赚了</span>
+          </div>
+          <div class="summary-col">
+            <span class="summary-value" id="reportExpense">--</span>
+            <span class="summary-label">支出</span>
+          </div>
+          <div class="summary-col">
+            <span class="summary-value" id="reportIncome">--</span>
+            <span class="summary-label">收入</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 账目概览 -->
+      <section class="report-card">
+        <h2 class="report-card-title">账目概览 <span id="reportStatsTime">(--)</span></h2>
+        <div class="account-grid" id="reportAccountGrid">
+          <div class="account-item"><span class="account-value">--</span><span class="account-label">银行存款</span></div>
+          <div class="account-item"><span class="account-value">--</span><span class="account-label">其他货币资金</span></div>
+          <div class="account-item"><span class="account-value">--</span><span class="account-label">现金</span></div>
+          <div class="account-item"><span class="account-value">--</span><span class="account-label">库存商品</span></div>
+          <div class="account-item"><span class="account-value">--</span><span class="account-label">固定资产</span></div>
+          <div class="account-item"><span class="account-value">--</span><span class="account-label">往年亏损</span></div>
+          <div class="account-item"><span class="account-value">--</span><span class="account-label">对外投资</span></div>
+          <div class="account-item"><span class="account-value">--</span><span class="account-label">理财投资</span></div>
+        </div>
+      </section>
+
+      <!-- 报表入口 -->
+      <section class="report-card">
+        <h2 class="report-card-title">报表</h2>
+        <div class="report-grid">
+          <a href="report-detail.html?type=balance-sheet" class="report-item">
+            <span class="report-icon report-icon-red">¥↓</span>
+            <span class="report-name">资产负债表</span>
+          </a>
+          <a href="report-detail.html?type=profit" class="report-item">
+            <span class="report-icon report-icon-green">¥↑</span>
+            <span class="report-name">利润表</span>
+          </a>
+          <a href="report-detail.html?type=cash-flow" class="report-item">
+            <span class="report-icon report-icon-blue">📈</span>
+            <span class="report-name">现金流量表</span>
+          </a>
+          <a href="report-detail.html?type=fixed-assets" class="report-item">
+            <span class="report-icon report-icon-orange">¥</span>
+            <span class="report-name">固定资产</span>
+          </a>
+          <a href="report-detail.html?type=account-balance" class="report-item">
+            <span class="report-icon report-icon-purple">📋</span>
+            <span class="report-name">科目余额表</span>
+          </a>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="config.js"></script>
+  <script src="report.js"></script>
+</body>
+</html>
