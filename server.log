@@ -3,36 +3,113 @@
    WARNING: This is a development server. Do not use it in a production deployment.
    Use a production WSGI server instead.
  * Debug mode: on
+Traceback (most recent call last):
+  File "server.py", line 557, in <module>
+    app.run(host='0.0.0.0', port=8083, debug=True)
+  File "/usr/local/lib64/python3.6/site-packages/flask/app.py", line 920, in run
+    run_simple(t.cast(str, host), port, self, **options)
+  File "/usr/local/lib/python3.6/site-packages/werkzeug/serving.py", line 991, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app 'server' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Traceback (most recent call last):
+  File "server.py", line 557, in <module>
+    app.run(host='0.0.0.0', port=8083, debug=True)
+  File "/usr/local/lib64/python3.6/site-packages/flask/app.py", line 920, in run
+    run_simple(t.cast(str, host), port, self, **options)
+  File "/usr/local/lib/python3.6/site-packages/werkzeug/serving.py", line 991, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app 'server' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Traceback (most recent call last):
+  File "server.py", line 557, in <module>
+    app.run(host='0.0.0.0', port=8083, debug=True)
+  File "/usr/local/lib64/python3.6/site-packages/flask/app.py", line 920, in run
+    run_simple(t.cast(str, host), port, self, **options)
+  File "/usr/local/lib/python3.6/site-packages/werkzeug/serving.py", line 991, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app 'server' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Traceback (most recent call last):
+  File "server.py", line 557, in <module>
+    app.run(host='0.0.0.0', port=8083, debug=True)
+  File "/usr/local/lib64/python3.6/site-packages/flask/app.py", line 920, in run
+    run_simple(t.cast(str, host), port, self, **options)
+  File "/usr/local/lib/python3.6/site-packages/werkzeug/serving.py", line 991, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app 'server' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+Traceback (most recent call last):
+  File "server.py", line 557, in <module>
+    app.run(host='0.0.0.0', port=8083, debug=True)
+  File "/usr/local/lib64/python3.6/site-packages/flask/app.py", line 920, in run
+    run_simple(t.cast(str, host), port, self, **options)
+  File "/usr/local/lib/python3.6/site-packages/werkzeug/serving.py", line 991, in run_simple
+    s.bind(server_address)
+OSError: [Errno 98] Address already in use
+ * Serving Flask app 'server' (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
  * Running on all addresses.
    WARNING: This is a development server. Do not use it in a production deployment.
- * Running on http://172.17.0.13:8083/ (Press CTRL+C to quit)
+ * Running on http://172.17.0.13:8084/ (Press CTRL+C to quit)
  * Restarting with stat
  * Debugger is active!
- * Debugger PIN: 104-310-404
-[2026-03-01 11:08:13,009] INFO in server: [sms] phone=138*** code=725928
-127.0.0.1 - - [01/Mar/2026 11:08:13] "POST /api/sms/send HTTP/1.1" 200 -
-127.0.0.1 - - [01/Mar/2026 11:08:24] "POST /api/auth/login HTTP/1.1" 200 -
-101.82.247.226 - - [01/Mar/2026 11:10:27] "[36mGET / HTTP/1.1[0m" 304 -
-101.82.247.226 - - [01/Mar/2026 11:10:27] "GET /styles.css HTTP/1.1" 200 -
-101.82.247.226 - - [01/Mar/2026 11:10:27] "GET /config.js HTTP/1.1" 200 -
-101.82.247.226 - - [01/Mar/2026 11:10:27] "GET /app.js HTTP/1.1" 200 -
-101.82.247.226 - - [01/Mar/2026 11:10:27] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
-101.82.247.226 - - [01/Mar/2026 11:10:28] "[36mGET / HTTP/1.1[0m" 304 -
-101.82.247.226 - - [01/Mar/2026 11:10:28] "[36mGET /styles.css HTTP/1.1[0m" 304 -
-101.82.247.226 - - [01/Mar/2026 11:10:28] "[36mGET /app.js HTTP/1.1[0m" 304 -
-101.82.247.226 - - [01/Mar/2026 11:10:28] "[36mGET /config.js HTTP/1.1[0m" 304 -
-220.196.160.65 - - [01/Mar/2026 11:16:45] "GET / HTTP/1.1" 200 -
-106.52.114.40 - - [01/Mar/2026 11:16:45] "GET /config.js HTTP/1.1" 200 -
-159.75.198.113 - - [01/Mar/2026 11:16:45] "GET /app.js HTTP/1.1" 200 -
-220.196.160.53 - - [01/Mar/2026 11:17:18] "GET / HTTP/1.1" 200 -
-43.144.106.92 - - [01/Mar/2026 11:17:19] "GET /config.js HTTP/1.1" 200 -
-106.52.109.61 - - [01/Mar/2026 11:17:19] "GET /app.js HTTP/1.1" 200 -
-220.196.160.101 - - [01/Mar/2026 11:17:19] "GET / HTTP/1.1" 200 -
-220.196.160.101 - - [01/Mar/2026 11:17:19] "GET /styles.css HTTP/1.1" 200 -
-220.196.160.101 - - [01/Mar/2026 11:17:19] "GET /config.js HTTP/1.1" 200 -
-220.196.160.101 - - [01/Mar/2026 11:17:19] "GET /app.js HTTP/1.1" 200 -
+ * Debugger PIN: 299-070-464
+127.0.0.1 - - [02/Mar/2026 13:24:00] "GET / HTTP/1.1" 200 -
  * Detected change in '/opt/baoshui/server.py', reloading
-[baoshui] 验证码 138*** -> 725928
  * Restarting with stat
  * Debugger is active!
- * Debugger PIN: 104-310-404
+ * Debugger PIN: 299-070-464
+ * Detected change in '/opt/baoshui/server.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 299-070-464
+ * Detected change in '/opt/baoshui/server.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 299-070-464
+ * Detected change in '/opt/baoshui/server.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 299-070-464
+ * Detected change in '/opt/baoshui/server.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 299-070-464
+ * Detected change in '/opt/baoshui/server.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 299-070-464
+ * Detected change in '/opt/baoshui/server.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 299-070-464
+ * Detected change in '/opt/baoshui/server.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger PIN: 299-070-464
+ * Detected change in '/opt/baoshui/server.py', reloading
+ * Restarting with stat
+  File "/opt/baoshui/server.py", line 162
+    if not phone or company_id is None or company_id === '':
+                                                       ^
+SyntaxError: invalid syntax
