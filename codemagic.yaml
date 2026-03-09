@@ -7,8 +7,6 @@ workflows:
     name: 自报税 iOS
     max_build_duration: 120
     instance_type: mac_mini_m2
-    integrations:
-      app_store_connect: codemagic  # 在 Codemagic 后台创建并命名
     environment:
       ios_signing:
         distribution_type: app_store
