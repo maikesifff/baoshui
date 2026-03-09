@@ -7,6 +7,8 @@ workflows:
     name: 自报税 iOS
     max_build_duration: 120
     instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: zbs  # 若在 Codemagic 里填的 API Key 名称不是 codemagic，请改成你填的名称
     environment:
       ios_signing:
         distribution_type: app_store
@@ -49,3 +51,7 @@ workflows:
             --scheme "$XCODE_SCHEME"
     artifacts:
       - ios/App/build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
