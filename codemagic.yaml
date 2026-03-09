@@ -28,7 +28,6 @@ workflows:
           include: true
         - pattern: master
           include: true
-      source: true
     scripts:
       - name: 安装依赖
         script: npm ci
@@ -52,6 +51,3 @@ workflows:
             --scheme "$XCODE_SCHEME"
     artifacts:
       - ios/App/build/ios/ipa/*.ipa
-    publishing:
-      # 构建完成后可在 Codemagic 页面下载 IPA
-      # 如需自动上传 TestFlight，在 Codemagic 后台配置 App Store Connect 发布
